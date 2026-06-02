@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+.pixi/envs/
+.snakemake/conda/
+
+# Pixi lock can be tracked if you want reproducible environments
+# Keep pixi.lock unless you deliberately want to ignore it
+
+# Build/package artifacts
+build/
+dist/
+*.egg-info/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Data / outputs
+outputs/
+results/
+figures/
+*.log
+
+# Excel temp files
+~$*.xlsx

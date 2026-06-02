@@ -1,0 +1,25 @@
+# config/technologies.yaml
+
+salt_cavern:
+  name: Salt cavern
+  pressure_min_bar: 60
+  pressure_max_bar: 200
+  temperature_c: 40
+  lifetime_years: 30
+  fixed_om_fraction: 0.02
+
+depleted_gas_field:
+  name: Depleted gas field
+  pressure_min_bar: 50
+  pressure_max_bar: 180
+  temperature_c: 45
+  lifetime_years: 30
+  fixed_om_fraction: 0.03
+
+lined_rock_cavern:
+  name: Lined rock cavern
+  pressure_min_bar: 30
+  pressure_max_bar: 250
+  temperature_c: 25
+  lifetime_years: 40
+  fixed_om_fraction: 0.02

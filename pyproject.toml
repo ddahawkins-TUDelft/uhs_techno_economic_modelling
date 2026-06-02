@@ -1,0 +1,35 @@
+
+[project]
+name = "uhs_techno_economic_modelling"
+version = "0.1.0"
+description = "Techno-economic model for underground hydrogen storage technologies"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.pixi.workspace]
+name = "uhs_techno_economic_modelling"
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[tool.pixi.pypi-dependencies]
+uhs_techno_economic_modelling = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+run-model = "python scripts/run_model.py"
+test = "pytest"
+
+[tool.pixi.dependencies]
+python = ">=3.11"
+pandas = ">=3.0.3,<4"
+numpy = ">=2.4.6,<3"
+openpyxl = ">=3.1.5,<4"
+pyyaml = ">=6.0.3,<7"
+pydantic = ">=2.13.4,<3"
+matplotlib = ">=3.10.9,<4"
+scipy = ">=1.17.1,<2"
+coolprop = ">=7.1.0,<8"
+pytest = ">=9.0.3,<10"
+ruff = ">=0.15.14,<0.16"
+black = ">=26.5.1,<27"
+jupyter = ">=1.1.1,<2"
+ipykernel = ">=7.2.0,<8"
