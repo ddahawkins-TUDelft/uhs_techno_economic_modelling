@@ -10,8 +10,8 @@ class HyStoriesCostAssumptions:
     target_year: int = 2025
 
     # Material cost factors
-    material_cost_factor_injection: float = 0.0
-    material_cost_factor_withdrawal: float = 0.0
+    material_cost_factor_injection: float = 1.0
+    material_cost_factor_withdrawal: float = 1.0
 
     # Energy and commodity prices
     cost_of_electricity_eur_per_mwh: float = 60.0
@@ -30,4 +30,4 @@ class HyStoriesCostAssumptions:
     # Contingency / BOP / indirects
     surface_contingency_fraction: float = 0.20
     subsurface_contingency_fraction: float = 0.20
-    bop_fraction: float = 0.20
+    bop_fraction: float = 0.05

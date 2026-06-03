@@ -18,11 +18,13 @@ from uhs_costs.design.site_development import (
     construct_field_interconnection_design,
     construct_salt_leaching_design,
 )
+from uhs_costs.design.purification import construct_purification
 from uhs_costs.design.compression_model import (
     CompressionInput,
     CompressionMethod,
     calculate_compression,
 )
+
 
 # ----------------------------------------------------------------------------------------------------
 #
@@ -51,6 +53,8 @@ DEFAULT_DISTANCE_NEAREST_GAS_PLANT_KM = 2.0 # HyStories D7.2-1, Table 35
 
 DEFAULT_FIELD_LINE_LENGTH_PER_WELL_HEAD_KM = 0.5 # HyStories D7.2-1, Table 21
 
+DEFAULT_PURIFICATION_FACTOR = 0 # HyStories D7.2-1, Table 25 
+
 DEFAULT_COMPRESSION_METHOD = CompressionMethod.HGSM_POLYTROPIC #using the polytropic compression method rather than the HyStories simplified approximation
 
 # ----------------------------------------------------------------------------------------------------
@@ -63,7 +67,7 @@ DEFAULT_HYDROGEN_COST_EUR_PER_KG = 2.0 # HyStories D7.2-1, Table 35
 
 # ----------------------------------------------------------------------------------------------------
 #
-#                                       CONSTRUCTOR
+#                                       DESIGN CONSTRUCTOR
 #
 # ----------------------------------------------------------------------------------------------------
 
@@ -93,6 +97,8 @@ def construct_salt_cavern_project(
     debrining_flowrate_per_cavern_m3_per_hour: float = DEFAULT_DEBRINING_FLOWRATE_PER_CAVERN_M3_PER_HOUR,
 
     compression_method: CompressionMethod = DEFAULT_COMPRESSION_METHOD,
+
+    purification_factor: float = DEFAULT_PURIFICATION_FACTOR,
 
     field_line_length_per_well_head_km = DEFAULT_FIELD_LINE_LENGTH_PER_WELL_HEAD_KM
 
@@ -125,6 +131,10 @@ def construct_salt_cavern_project(
         minimum_operating_pressure_pa=minimum_operating_pressure_pa,
         abandonment_pressure_pa=abandonment_pressure_pa,
         pipeline_pressure_pa=pipeline_pressure_pa,
+    )
+
+    purification = construct_purification(
+        purification_factor=purification_factor
     )
 
     #determine number of caverns, number of well heads, and actual per cavern withdrawal requirements
@@ -184,4 +194,5 @@ def construct_salt_cavern_project(
         field_interconnection=field_interconnection,
         salt_leaching=salt_leaching,
         compression=compression,
+        purification=purification
     )

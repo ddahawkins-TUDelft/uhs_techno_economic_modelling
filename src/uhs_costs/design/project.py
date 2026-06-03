@@ -11,6 +11,7 @@ from uhs_costs.design.site_development import (
     SaltLeachingDesign, 
     )
 from uhs_costs.design.compression_model import CompressionResult
+from uhs_costs.design.purification import Purification
 
 
 class StorageTechnology(StrEnum):
@@ -23,17 +24,14 @@ class StorageTechnology(StrEnum):
 class StorageProject:
     technology: StorageTechnology
     case_name: str | None
-
     inventory: StorageInventory 
     flows: StorageFlows
     pressures: StoragePressures
-
     wells: WellDesign | None = None
     drilling: DrillingDesign | None = None
     field_interconnection: FieldInterconnectionDesign | None = None
-
     salt_leaching: SaltLeachingDesign | None = None
-
     compression: CompressionResult | None = None
+    purification: Purification | None = None
 
 
