@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from uhs_costs.design.project import StorageTechnology
+
 
 @dataclass(frozen=True)
 class HyStoriesCostAssumptions:
@@ -17,17 +19,48 @@ class HyStoriesCostAssumptions:
     cost_of_electricity_eur_per_mwh: float = 60.0
     hydrogen_cost_eur_per_kg: float = 2.0
 
-    # Surface OPEX
-    surface_fixed_opex_fraction_of_epc: float = 0.04
-    purification_coefficient: float = 0.0
-    variable_opex_fixed_component_injection_share: float = 0.5
+    #purification
+    purification_coefficient: float = 0
 
-    # Subsurface OPEX
-    well_intervention_fraction_of_wells_capex: float = 0.02
-    monitoring_fraction_of_wells_capex: float = 0.01
-    total_subsurface_fixed_opex_fraction_of_wells_capex: float = 0.03
+    #OPEX
+    surface_fixed_component_of_fixed_opex = 2100
+    surface_fixed_opex_fraction_of_epc: float = 0.04
+    subsurface_fixed_opex_fraction_of_wells_capex: float = 0.03
+
 
     # Contingency / BOP / indirects
     surface_contingency_fraction: float = 0.20
     subsurface_contingency_fraction: float = 0.20
     bop_fraction: float = 0.05
+
+    #abex
+    surface_abex_fraction: float = 0.20
+    subsurface_abex_fraction: float = 0.20
+    
+def construct_hystories_cost_assumptions(
+    storage_technology: StorageTechnology,
+    overrides: dict[str, object] | None = None,
+) -> HyStoriesCostAssumptions:
+    
+    assumptions = HyStoriesCostAssumptions()
+
+    if storage_technology == StorageTechnology.SALT_CAVERN:
+        assumptions.purification_coefficient = 0
+    elif storage_technology == StorageTechnology.LINED_ROCK_CAVERN:
+        assumptions.purification_coefficient = 0
+    elif storage_technology == StorageTechnology.DEPLETED_GAS_FIELD:
+        assumptions.purification_coefficient = 1.5
+    elif storage_technology == StorageTechnology.AQUIFER:
+        assumptions.purification_coefficient = 1.5
+    else:
+        raise ValueError(f"{storage_technology} is not a valid input for storage_technology")
+
+    if overrides is not None:
+        for key, value in overrides.items():
+            if not hasattr(assumptions, key):
+                raise ValueError(
+                    f"'{key}' is not a valid HyStoriesCostAssumptions field."
+                )
+            setattr(assumptions, key, value)
+
+    return assumptions

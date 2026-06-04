@@ -118,46 +118,57 @@ def epc1_salt_leaching_facilities_pipeline_cost_eur(
 
 #----------------------------------------------------------------------------------------------------
 # 
+#                                               EPC2 Leaching
+#                                               (salt caverns)
+#
+#----------------------------------------------------------------------------------------------------
+
+def epc2_salt_leaching_cost_eur(
+    number_caverns: int,
+    leaching_duration_per_cavern_months: float,
+    total_leaching_duration_years: float,
+    cost_of_electricity_eur_per_mwh: float = 60.0,
+) -> float:
+    """HyStories EPC2 Salt leaching operation and maintenance cost.
+
+    Returns EUR.
+    """
+    _validate_positive_int(number_caverns, "number_caverns")
+    _validate_positive(
+        leaching_duration_per_cavern_months,
+        "leaching_duration_per_cavern_months",
+    )
+    _validate_positive(
+        total_leaching_duration_years,
+        "total_leaching_duration_years",
+    )
+    _validate_positive(
+        cost_of_electricity_eur_per_mwh,
+        "cost_of_electricity_eur_per_mwh",
+    )
+
+    cost_keur = (
+        total_leaching_duration_years * (28 * number_caverns + 9500)
+        + number_caverns
+        * (
+            87.5
+            * (cost_of_electricity_eur_per_mwh / 60 + 1.4)
+            * leaching_duration_per_cavern_months
+            - 420
+        )
+    )
+
+    return cost_keur * 1000
+
+
+
+#----------------------------------------------------------------------------------------------------
+# 
 #                                               EPC3 Debrining and First Fill
 #                                                   (salt caverns)
 #
 #----------------------------------------------------------------------------------------------------
 
-def salt_debrining_duration_one_cavern_days(
-    free_gas_volume_per_cavern_thousand_m3: float,
-    debrining_flowrate_per_cavern_m3_per_hour: float,
-) -> float:
-    """HyStories salt cavern debrining duration for one cavern in days."""
-    _validate_positive(free_gas_volume_per_cavern_thousand_m3, "free_gas_volume_per_cavern_thousand_m3")
-    _validate_positive(debrining_flowrate_per_cavern_m3_per_hour, "debrining_flowrate_per_cavern_m3_per_hour")
-
-    return (
-        (1100 / 24)
-        * free_gas_volume_per_cavern_thousand_m3
-        / debrining_flowrate_per_cavern_m3_per_hour
-    )
-
-
-def salt_total_conversion_duration_years(
-    number_well_heads: int,
-    free_gas_volume_per_cavern_thousand_m3: float,
-    debrining_flowrate_per_cavern_m3_per_hour: float,
-) -> float:
-    """HyStories total salt cavern conversion duration in years.
-
-    Assumes two caverns can be debrined in parallel, following HyStories.
-    """
-    _validate_positive_int(number_well_heads, "number_well_heads")
-
-    duration_one_cavern_days = salt_debrining_duration_one_cavern_days(
-        free_gas_volume_per_cavern_thousand_m3=free_gas_volume_per_cavern_thousand_m3,
-        debrining_flowrate_per_cavern_m3_per_hour=debrining_flowrate_per_cavern_m3_per_hour,
-    )
-
-    return (
-        duration_one_cavern_days * ceil(number_well_heads / 2)
-        + 60
-    ) / 365
 
 
 def epc3_salt_conversion_time_scaled_cost_eur(
@@ -271,26 +282,6 @@ def epc4_porous_observation_well_drilling_cost_eur(
 #
 #----------------------------------------------------------------------------------------------------
 
-def porous_first_gas_fill_duration_years(
-    working_gas_volume_million_sm3: float,
-    cushion_gas_volume_million_sm3: float,
-    withdrawal_flow_million_sm3_per_day: float,
-    withdrawal_to_injection_ratio: float,
-) -> float:
-    """HyStories porous-media first gas fill duration in years."""
-    _validate_positive(working_gas_volume_million_sm3, "working_gas_volume_million_sm3")
-    _validate_non_negative(cushion_gas_volume_million_sm3, "cushion_gas_volume_million_sm3")
-    _validate_positive(withdrawal_flow_million_sm3_per_day, "withdrawal_flow_million_sm3_per_day")
-    _validate_positive(withdrawal_to_injection_ratio, "withdrawal_to_injection_ratio")
-
-    return (
-        60
-        + 1.10
-        * withdrawal_to_injection_ratio
-        * (working_gas_volume_million_sm3 + cushion_gas_volume_million_sm3)
-        / withdrawal_flow_million_sm3_per_day
-    ) / 365
-
 
 def epc3_porous_first_gas_fill_cost_eur(
     first_gas_fill_duration_years: float,
@@ -320,36 +311,52 @@ def epc3_porous_first_gas_fill_cost_eur(
 #
 #----------------------------------------------------------------------------------------------------
 
-def cushion_gas_cost_eur(
-    cushion_gas_to_total_gas_ratio: float,
-    working_gas_volume_million_sm3: float,
+#redundant but kept here for legacy transparency
+# def cushion_gas_cost_eur(
+#     cushion_gas_to_total_gas_ratio: float,
+#     working_gas_volume_million_sm3: float,
+#     hydrogen_cost_eur_per_kg: float = 2.0,
+#     hydrogen_tonnes_per_million_sm3: float = 85.0,
+# ) -> float:
+#     """HyStories cushion gas cost.
+
+#     Returns EUR.
+#     """
+#     if not 0 <= cushion_gas_to_total_gas_ratio < 1:
+#         raise ValueError("cushion_gas_to_total_gas_ratio must be in [0, 1).")
+
+#     _validate_positive(working_gas_volume_million_sm3, "working_gas_volume_million_sm3")
+#     _validate_positive(hydrogen_cost_eur_per_kg, "hydrogen_cost_eur_per_kg")
+#     _validate_positive(hydrogen_tonnes_per_million_sm3, "hydrogen_tonnes_per_million_sm3")
+
+#     cushion_gas_volume_million_sm3 = (
+#         cushion_gas_to_total_gas_ratio
+#         / (1 - cushion_gas_to_total_gas_ratio)
+#         * working_gas_volume_million_sm3
+#     )
+
+#     hydrogen_kg = (
+#         cushion_gas_volume_million_sm3
+#         * hydrogen_tonnes_per_million_sm3
+#         * 1000
+#     )
+
+#     return hydrogen_kg * hydrogen_cost_eur_per_kg
+
+def cushion_gas_cost_eur_simple(
+    cushion_gas_mass_kg: float,
     hydrogen_cost_eur_per_kg: float = 2.0,
-    hydrogen_tonnes_per_million_sm3: float = 85.0,
 ) -> float:
-    """HyStories cushion gas cost.
+    """HyStories cushion gas cost, but refactored given cushion gas mass is calculated by the inventory model directly.
 
     Returns EUR.
     """
-    if not 0 <= cushion_gas_to_total_gas_ratio < 1:
-        raise ValueError("cushion_gas_to_total_gas_ratio must be in [0, 1).")
-
-    _validate_positive(working_gas_volume_million_sm3, "working_gas_volume_million_sm3")
+    
+    _validate_positive(cushion_gas_mass_kg, "cushion_gas_mass_kg")
     _validate_positive(hydrogen_cost_eur_per_kg, "hydrogen_cost_eur_per_kg")
-    _validate_positive(hydrogen_tonnes_per_million_sm3, "hydrogen_tonnes_per_million_sm3")
 
-    cushion_gas_volume_million_sm3 = (
-        cushion_gas_to_total_gas_ratio
-        / (1 - cushion_gas_to_total_gas_ratio)
-        * working_gas_volume_million_sm3
-    )
-
-    hydrogen_kg = (
-        cushion_gas_volume_million_sm3
-        * hydrogen_tonnes_per_million_sm3
-        * 1000
-    )
-
-    return hydrogen_kg * hydrogen_cost_eur_per_kg
+    
+    return cushion_gas_mass_kg * hydrogen_cost_eur_per_kg
 
 #----------------------------------------------------------------------------------------------------
 # 
@@ -357,7 +364,7 @@ def cushion_gas_cost_eur(
 #
 #----------------------------------------------------------------------------------------------------
 
-def subsurface_contingency_cost_eur(
+def contingency_cost_eur(
     base_cost_eur: float,
     contingency_fraction: float = 0.20,
 ) -> float:

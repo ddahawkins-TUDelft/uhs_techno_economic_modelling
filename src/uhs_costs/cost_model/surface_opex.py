@@ -28,7 +28,7 @@ def _validate_compression_ratio(compression_ratio: float) -> None:
 #
 #----------------------------------------------------------------------------------------------------
 
-def fixed_opex_base_cost_eur_per_year() -> float:
+def fixed_opex_base_cost_eur_per_year(fixed_cost_k_eur: float = 2100) -> float:
     """HyStories fixed surface OPEX base component, which relates to employee wages
 
     Returns EUR/year.
@@ -36,7 +36,7 @@ def fixed_opex_base_cost_eur_per_year() -> float:
     Component:
         2100 kEUR/year
     """
-    return 2100 * 1000
+    return fixed_cost_k_eur * 1000
 
 def fixed_opex_fraction_of_epc_cost_eur_per_year(
     surface_epc_cost_eur: float,

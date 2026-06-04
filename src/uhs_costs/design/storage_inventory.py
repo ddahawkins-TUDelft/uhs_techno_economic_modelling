@@ -31,6 +31,9 @@ class StorageInventory:
     conditions should live outside this object.
     """
 
+    #storage energy capacity
+    working_gas_capacity_kwh_lhv: float
+
     # Derived geometric / pore volume requirement
     required_storage_volume_m3: float
 
@@ -168,6 +171,7 @@ def construct_storage_inventory(
     )
 
     return StorageInventory(
+        working_gas_capacity_kwh_lhv=working_gas_capacity_kwh_lhv,
         required_storage_volume_m3=required_storage_volume_m3,
         working_gas_h2_volume_sm3=working_gas_h2_volume_sm3,
         working_gas_h2_mass_kg=working_gas_h2_mass_kg,

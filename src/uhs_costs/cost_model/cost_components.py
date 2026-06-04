@@ -13,6 +13,15 @@ class CostDriver(StrEnum):
     STORAGE = "storage_capacity_kWh"
     WITHDRAWAL = "withdrawal_capacity_kw"
 
+    INJECTION_THROUGHPUT_KWH = "injection_throughput_kwh"
+    WITHDRAWAL_THROUGHPUT_KWH = "withdrawal_throughput_kwh"
+
+class CostUnit(StrEnum):
+    EUR_PER_KW = "EUR/kW"
+    EUR_PER_KWH = "EUR/kWh"
+    EUR_PER_KW_YEAR = "EUR/kW/year"
+    EUR_PER_KWH_YEAR = "EUR/kWh/year"
+
 class AllocationMethod(StrEnum):
     DIRECT = "direct"
     EQUAL_SPLIT = "equal_split"
@@ -24,7 +33,8 @@ class HyStoriesGroup(StrEnum):
 
 class CostType(StrEnum):
     CAPEX = "capex"
-    OPEX = "opex"
+    FIXED_OPEX = "fixed_opex"
+    VARIABLE_OPEX = "variable_opex"
     ABEX = "abex"
 
 @dataclass(frozen=True)
@@ -37,6 +47,11 @@ class CostComponent:
 
     cost_driver: CostDriver
     driver_value: float 
+
+    cost_unit: CostUnit
+
+    allocation_method: AllocationMethod | None = None
+    allocation_share: float | None = None
 
     notes: str | None = None
 
@@ -78,6 +93,7 @@ def fixed_component_cost_allocation(
     cost_type: CostType,
     hystories_group: HyStoriesGroup,
     cost_drivers_and_values: tuple[tuple[CostDriver, float], ...],
+    cost_unit: CostUnit,
     allocation_method: AllocationMethod,
 ) -> tuple[CostComponent, ...]:
     """Allocate a fixed cost component across one or more cost drivers."""
@@ -140,8 +156,8 @@ def fixed_component_cost_allocation(
                 cost_driver=cost_driver,
                 driver_value=driver_value,
                 allocation_method=allocation_method,
+                cost_unit=cost_unit,
                 allocation_share=allocation_share,
-                source_component=name,
                 notes=(
                     f"HyStories {name} component allocated to {cost_driver.value} "
                     f"using {allocation_method.value}."

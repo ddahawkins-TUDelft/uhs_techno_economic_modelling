@@ -84,7 +84,7 @@ def epc2_instrumentation_cost_eur(
         number_well_heads: int,
 ) -> float:
     """HyStories EPC2 costs associated with wellhead separators, instrumentation, and valves"""
-    return number_well_heads*(1605*(1+0.476*material_cost_factor_withdrawal))
+    return number_well_heads*(1605*(1+0.476*material_cost_factor_withdrawal))*1000
 
 #----------------------------------------------------------------------------------------------------
 # 
@@ -139,9 +139,20 @@ def epc5_proportional_cost_eur(
 #
 #----------------------------------------------------------------------------------------------------
 
-def contingency_proportional_cost_eur(
-        cost: float,
-        contingency_factor: float = 0.2 #default from HyStories
-    ) -> float:
-    """ HyStories proportional contigency cost."""
-    return cost*contingency_factor
+def contingency_cost_eur(
+    base_cost_eur: float,
+    contingency_fraction: float = 0.20,
+) -> float:
+    """HyStories surface contingency cost.
+
+    Returns EUR.
+    """
+    _validate_non_negative(base_cost_eur, "base_cost_eur")
+    _validate_non_negative(contingency_fraction, "contingency_fraction")
+
+    return contingency_fraction * base_cost_eur
+
+def _validate_non_negative(value: float, name: str) -> None:
+    """Validate that a numeric value is non-negative."""
+    if value < 0:
+        raise ValueError(f"{name} cannot be negative.")

@@ -17,6 +17,9 @@ from uhs_costs.design.site_development import (
     construct_drilling_design,
     construct_field_interconnection_design,
     construct_salt_leaching_design,
+    construct_salt_conversion_process,
+    construct_salt_leaching_process
+
 )
 from uhs_costs.design.purification import construct_purification
 from uhs_costs.design.compression_model import (
@@ -54,6 +57,8 @@ DEFAULT_DISTANCE_NEAREST_GAS_PLANT_KM = 2.0 # HyStories D7.2-1, Table 35
 DEFAULT_FIELD_LINE_LENGTH_PER_WELL_HEAD_KM = 0.5 # HyStories D7.2-1, Table 21
 
 DEFAULT_PURIFICATION_FACTOR = 0 # HyStories D7.2-1, Table 25 
+
+DEFAULT_NUMBER_LEACHING_PUMPS = 4 # HyStories D7.2-1, Second 3.2.3 informally establishes this as an assumption
 
 DEFAULT_COMPRESSION_METHOD = CompressionMethod.HGSM_POLYTROPIC #using the polytropic compression method rather than the HyStories simplified approximation
 
@@ -99,6 +104,8 @@ def construct_salt_cavern_project(
     compression_method: CompressionMethod = DEFAULT_COMPRESSION_METHOD,
 
     purification_factor: float = DEFAULT_PURIFICATION_FACTOR,
+
+    number_leaching_pumps: float = DEFAULT_NUMBER_LEACHING_PUMPS,
 
     field_line_length_per_well_head_km = DEFAULT_FIELD_LINE_LENGTH_PER_WELL_HEAD_KM
 
@@ -165,10 +172,29 @@ def construct_salt_cavern_project(
 
     #construct SaltLeachingDesign
     salt_leaching = construct_salt_leaching_design(
-        free_gas_volume_per_cavern_thousand_m3=(inventory.required_storage_volume_m3 / number_caverns / 1_000 ),
         fresh_water_pipeline_length_km=fresh_water_pipeline_length_km,
         brine_disposal_pipeline_length_km=brine_disposal_pipeline_length_km,
-        debrining_flowrate_per_cavern_m3_per_hour=debrining_flowrate_per_cavern_m3_per_hour,
+        free_gas_volume_per_cavern_thousand_m3=(
+            inventory.required_storage_volume_m3 / wells.number_caverns / 1000
+        ),
+    )
+
+    salt_leaching_process = construct_salt_leaching_process(
+        free_gas_volume_per_cavern_thousand_m3=(
+            salt_leaching.free_gas_volume_per_cavern_thousand_m3
+        ),
+        number_caverns=wells.number_caverns,
+        number_working_leaching_pumps=number_leaching_pumps,
+    )
+
+    salt_conversion_process = construct_salt_conversion_process(
+        number_well_heads=wells.number_well_heads,
+        free_gas_volume_per_cavern_thousand_m3=(
+            salt_leaching.free_gas_volume_per_cavern_thousand_m3
+        ),
+        debrining_flowrate_per_cavern_m3_per_hour=(
+            debrining_flowrate_per_cavern_m3_per_hour
+        ),
     )
 
     #construct CompressionResult
@@ -193,6 +219,9 @@ def construct_salt_cavern_project(
         drilling=drilling,
         field_interconnection=field_interconnection,
         salt_leaching=salt_leaching,
+        salt_leaching_process=salt_leaching_process,
+        salt_conversion_process=salt_conversion_process,
+        porous_first_fill_process=None, #n/a for salt caverns
         compression=compression,
         purification=purification
     )

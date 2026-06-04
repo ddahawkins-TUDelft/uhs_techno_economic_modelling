@@ -9,9 +9,14 @@ from uhs_costs.design.site_development import (
     DrillingDesign, 
     FieldInterconnectionDesign,
     SaltLeachingDesign, 
+    SaltLeachingProcess,
+    SaltConversionProcess,
+    PorousFirstFillProcess
+    
     )
 from uhs_costs.design.compression_model import CompressionResult
 from uhs_costs.design.purification import Purification
+
 
 
 class StorageTechnology(StrEnum):
@@ -31,6 +36,9 @@ class StorageProject:
     drilling: DrillingDesign | None = None
     field_interconnection: FieldInterconnectionDesign | None = None
     salt_leaching: SaltLeachingDesign | None = None
+    salt_leaching_process: SaltLeachingProcess | None = None
+    salt_conversion_process: SaltConversionProcess | None = None
+    porous_first_fill_process: PorousFirstFillProcess | None = None
     compression: CompressionResult | None = None
     purification: Purification | None = None
 
