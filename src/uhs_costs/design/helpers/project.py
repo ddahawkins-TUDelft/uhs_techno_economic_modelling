@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from enum import StrEnum
 
-from uhs_costs.design.storage_inventory import StorageInventory
-from uhs_costs.design.storage_flows import StorageFlows
-from uhs_costs.design.storage_pressures import StoragePressures
-from uhs_costs.design.well_design import WellDesign
-from uhs_costs.design.site_development import (
+from uhs_costs.design.helpers.storage_inventory import StorageInventory
+from uhs_costs.design.helpers.storage_flows import StorageFlows
+from uhs_costs.design.helpers.storage_pressures import StoragePressures
+from uhs_costs.design.helpers.well_design import WellDesign
+from uhs_costs.design.helpers.site_development import (
     DrillingDesign, 
     FieldInterconnectionDesign,
     SaltLeachingDesign, 
@@ -14,8 +14,8 @@ from uhs_costs.design.site_development import (
     PorousFirstFillProcess
     
     )
-from uhs_costs.design.compression_model import CompressionResult
-from uhs_costs.design.purification import Purification
+from uhs_costs.design.helpers.compression_model import CompressionResult
+from uhs_costs.design.helpers.purification import Purification
 
 
 

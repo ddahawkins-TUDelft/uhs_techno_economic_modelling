@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, fields, replace
 from typing import Any, Mapping, TypeVar
 
-from uhs_costs.design.project import StorageTechnology
-from uhs_costs.design.compression_model import CompressionMethod
+from uhs_costs.design.helpers.project import StorageTechnology
+from uhs_costs.design.helpers.compression_model import CompressionMethod
 
 
 # =============================================================================

@@ -1,8 +1,8 @@
 from collections import defaultdict
 
 from uhs_costs.design.salt_cavern import construct_salt_cavern_project
-from uhs_costs.cost_model.recipes import calculate_salt_cavern_cost_components
-from uhs_costs.cost_model.cost_components import CostType
+from uhs_costs.cost_model.salt_cavern import calculate_salt_cavern_cost_components
+from uhs_costs.cost_model.helpers.cost_components import CostType
 
 
 # --------------------------------------------------------------------------------------------------
@@ -344,15 +344,6 @@ def main() -> None:
     print_driver_type_unit_totals(breakdown)
     print_hystories_group_type_unit_totals(breakdown)
     print_raw_totals_by_type(breakdown)
-
-    if getattr(project, "salt_leaching_process", None) is not None:
-        print("\nSalt leaching process")
-        print(project.salt_leaching_process)
-
-    if getattr(project, "salt_conversion_process", None) is not None:
-        print("\nSalt conversion process")
-        print(project.salt_conversion_process)
-
 
 if __name__ == "__main__":
     main()

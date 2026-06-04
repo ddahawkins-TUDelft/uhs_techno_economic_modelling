@@ -10,14 +10,14 @@ import warnings
 
 from math import exp, log
 
-from uhs_costs.design.compression_model import CompressionResult, CompressionStageResult
+from uhs_costs.design.helpers.compression_model import CompressionResult, CompressionStageResult
 from uhs_costs.constants import (
     DEFAULT_CEPCI_2020,
     DEFAULT_CEPCI_2025,
     DEFAULT_TARGET_CURRENCY,
     DEFAULT_USD_TO_EUR,
 )
-from uhs_costs.cost_model import surface_capex
+from uhs_costs.cost_model.helpers import surface_capex
 
 
 #classes

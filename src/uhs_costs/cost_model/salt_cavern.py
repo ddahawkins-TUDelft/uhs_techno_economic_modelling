@@ -1,8 +1,9 @@
 
-from uhs_costs.design.project import StorageProject, StorageTechnology
+from uhs_costs.cost_model.helpers import abex, subsurface_capex, subsurface_opex, surface_capex
+from uhs_costs.design.helpers.project import StorageProject, StorageTechnology
 from uhs_costs.cost_model.default_cost_assumptions import construct_hystories_cost_assumptions
-from uhs_costs.cost_model import surface_capex, subsurface_capex, abex, surface_opex, subsurface_opex
-from uhs_costs.cost_model.cost_components import (
+from uhs_costs.cost_model.helpers import surface_opex
+from uhs_costs.cost_model.helpers.cost_components import (
     CostBreakdown,
     CostComponent,
     CostType,

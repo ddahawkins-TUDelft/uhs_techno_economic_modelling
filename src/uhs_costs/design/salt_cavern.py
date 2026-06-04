@@ -8,12 +8,12 @@ from __future__ import annotations
 
 from math import ceil
 
-from uhs_costs.design.project import StorageProject, StorageTechnology
-from uhs_costs.design.storage_inventory import construct_storage_inventory
-from uhs_costs.design.storage_flows import construct_storage_flows
-from uhs_costs.design.storage_pressures import construct_storage_pressures
-from uhs_costs.design.well_design import construct_well_design
-from uhs_costs.design.site_development import (
+from uhs_costs.design.helpers.project import StorageProject, StorageTechnology
+from uhs_costs.design.helpers.storage_inventory import construct_storage_inventory
+from uhs_costs.design.helpers.storage_flows import construct_storage_flows
+from uhs_costs.design.helpers.storage_pressures import construct_storage_pressures
+from uhs_costs.design.helpers.well_design import construct_well_design
+from uhs_costs.design.helpers.site_development import (
     construct_drilling_design,
     construct_field_interconnection_design,
     construct_salt_leaching_design,
@@ -21,8 +21,8 @@ from uhs_costs.design.site_development import (
     construct_salt_leaching_process
 
 )
-from uhs_costs.design.purification import construct_purification
-from uhs_costs.design.compression_model import (
+from uhs_costs.design.helpers.purification import construct_purification
+from uhs_costs.design.helpers.compression_model import (
     CompressionInput,
     calculate_compression,
 )

@@ -1,4 +1,4 @@
-from uhs_costs.cost_model.financing import capital_recovery_factor, annualised_capex
+from uhs_costs.cost_model.helpers.financing import capital_recovery_factor, annualised_capex
 
 
 def test_capital_recovery_factor_zero_discount_rate():

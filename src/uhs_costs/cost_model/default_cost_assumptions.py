@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from uhs_costs.design.project import StorageTechnology
+from uhs_costs.design.helpers.project import StorageTechnology
 
 
 @dataclass(frozen=True)
