@@ -19,9 +19,6 @@ class HyStoriesCostAssumptions:
     cost_of_electricity_eur_per_mwh: float = 60.0
     hydrogen_cost_eur_per_kg: float = 2.0
 
-    #purification
-    purification_coefficient: float = 0
-
     #OPEX
     surface_fixed_component_of_fixed_opex = 2100
     surface_fixed_opex_fraction_of_epc: float = 0.04
@@ -43,17 +40,6 @@ def construct_hystories_cost_assumptions(
 ) -> HyStoriesCostAssumptions:
     
     assumptions = HyStoriesCostAssumptions()
-
-    if storage_technology == StorageTechnology.SALT_CAVERN:
-        assumptions.purification_coefficient = 0
-    elif storage_technology == StorageTechnology.LINED_ROCK_CAVERN:
-        assumptions.purification_coefficient = 0
-    elif storage_technology == StorageTechnology.DEPLETED_GAS_FIELD:
-        assumptions.purification_coefficient = 1.5
-    elif storage_technology == StorageTechnology.AQUIFER:
-        assumptions.purification_coefficient = 1.5
-    else:
-        raise ValueError(f"{storage_technology} is not a valid input for storage_technology")
 
     if overrides is not None:
         for key, value in overrides.items():

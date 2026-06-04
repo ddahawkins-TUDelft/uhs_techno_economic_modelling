@@ -2,7 +2,7 @@ import uhs_costs.cost_model.surface_capex
 import uhs_costs.cost_model.subsurface_capex
 import uhs_costs.cost_model.surface_opex
 import uhs_costs.cost_model.subsurface_opex
-import uhs_costs.cost_model.assumptions
+import uhs_costs.cost_model.default_cost_assumptions
 import uhs_costs.cost_model.abex
 
 from dataclasses import dataclass

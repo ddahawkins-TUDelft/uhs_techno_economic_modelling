@@ -1,6 +1,6 @@
 
 from uhs_costs.design.project import StorageProject, StorageTechnology
-from uhs_costs.cost_model.assumptions import construct_hystories_cost_assumptions
+from uhs_costs.cost_model.default_cost_assumptions import construct_hystories_cost_assumptions
 from uhs_costs.cost_model import surface_capex, subsurface_capex, abex, surface_opex, subsurface_opex
 from uhs_costs.cost_model.cost_components import (
     CostBreakdown,
@@ -31,6 +31,7 @@ def calculate_salt_cavern_cost_components(
     # project.field_interconnection
     # project.salt_leaching
     # project.purification
+    
 
     #generate default cost assumptions object
     assumptions = construct_hystories_cost_assumptions(
@@ -501,7 +502,7 @@ def calculate_salt_cavern_cost_components(
 
     surface_variable_opex_withdrawal = surface_opex.variable_opex_rate_withdrawal_eur_per_kwh_h2_lhv(
         cost_of_electricity_eur_per_mwh=assumptions.cost_of_electricity_eur_per_mwh,
-        purification_coefficient=assumptions.purification_coefficient
+        purification_coefficient=project.purification.purification_factor
     )
 
     components.append(

@@ -24,9 +24,10 @@ from uhs_costs.design.site_development import (
 from uhs_costs.design.purification import construct_purification
 from uhs_costs.design.compression_model import (
     CompressionInput,
-    CompressionMethod,
     calculate_compression,
 )
+
+from uhs_costs.design.default_design_assumptions import HyStoriesDesignAssumptions, construct_hystories_design_assumptions
 
 
 # ----------------------------------------------------------------------------------------------------
@@ -35,40 +36,15 @@ from uhs_costs.design.compression_model import (
 #
 # ----------------------------------------------------------------------------------------------------
 
-DEFAULT_TEMPERATURE_K = 342.0
-
-DEFAULT_MINIMUM_OPERATING_PRESSURE_PA = 9.0e6 # DOI 10.2139/ssrn.5010580, DOI 10.1016/j.ijhydene.2023.04.090
-DEFAULT_MAXIMUM_OPERATING_PRESSURE_PA = 2.4e7 # DOI 10.2139/ssrn.5010580, DOI 10.1016/j.ijhydene.2023.04.090
-DEFAULT_ABANDONMENT_PRESSURE_PA = 0.0 # N/A for Salt Caverns
-
-DEFAULT_PIPELINE_PRESSURE_PA = 4.0e6 # DOI 10.1016/j.ijhydene.2023.04.090, HyStories default is 5.5e6
-
-DEFAULT_WORKING_GAS_VOLUME_PER_CAVERN_SM3 = 31_250_000.0 # HyStories D7.2-1, Table 18
-DEFAULT_MAXIMUM_WITHDRAWAL_FLOW_PER_CAVERN_MILLION_SM3_PER_DAY = 2.79 # HyStories D7.2-1, Table 18
-
-DEFAULT_LAST_CEMENTED_CASING_SHOE_M = 1_000.0 # HyStories D7.2-1, Table 18
-DEFAULT_DRILLING_COMPLEXITY_INDEX = 1.0 # HyStories D7.2-1, Table 35
-
-DEFAULT_FRESH_WATER_PIPELINE_LENGTH_KM = 15.0 # HyStories D7.2-1, Table 35
-DEFAULT_BRINE_DISPOSAL_PIPELINE_LENGTH_KM = 30.0 # HyStories D7.2-1, Table 35
-DEFAULT_DEBRINING_FLOWRATE_PER_CAVERN_M3_PER_HOUR = 200.0 # HyStories D7.2-1, Table 35
-DEFAULT_DISTANCE_NEAREST_GAS_PLANT_KM = 2.0 # HyStories D7.2-1, Table 35
-
-DEFAULT_FIELD_LINE_LENGTH_PER_WELL_HEAD_KM = 0.5 # HyStories D7.2-1, Table 21
-
-DEFAULT_PURIFICATION_FACTOR = 0 # HyStories D7.2-1, Table 25 
-
-DEFAULT_NUMBER_LEACHING_PUMPS = 4 # HyStories D7.2-1, Second 3.2.3 informally establishes this as an assumption
-
-DEFAULT_COMPRESSION_METHOD = CompressionMethod.HGSM_POLYTROPIC #using the polytropic compression method rather than the HyStories simplified approximation
-
-# ----------------------------------------------------------------------------------------------------
-#
-#                               Salt cavern Costs Assumptions
-#
-# ----------------------------------------------------------------------------------------------------
-
-DEFAULT_HYDROGEN_COST_EUR_PER_KG = 2.0 # HyStories D7.2-1, Table 35 
+ASSUMPTIONS =  construct_hystories_design_assumptions(
+    storage_technology=StorageTechnology.SALT_CAVERN,
+    general_overrides={
+        'temperature_k': 342,
+        'minimum_operating_pressure_pa': 9.0e6,
+        'maximum_operating_pressure_pa': 24e6,
+        'abandonment_pressure_pa': 0,
+    }
+)
 
 # ----------------------------------------------------------------------------------------------------
 #
@@ -80,34 +56,9 @@ def construct_salt_cavern_project(
     working_gas_capacity_kwh_lhv: float,
     withdrawal_flow_kw_h2_lhv: float,
     injection_flow_kw_h2_lhv: float,
+    assumptions: HyStoriesDesignAssumptions = ASSUMPTIONS,
     case_name: str | None = None,
 
-    #DEFAULTS
-    temperature_k: float = DEFAULT_TEMPERATURE_K,
-    minimum_operating_pressure_pa: float = DEFAULT_MINIMUM_OPERATING_PRESSURE_PA,
-    maximum_operating_pressure_pa: float = DEFAULT_MAXIMUM_OPERATING_PRESSURE_PA,
-    abandonment_pressure_pa: float = DEFAULT_ABANDONMENT_PRESSURE_PA,
-    pipeline_pressure_pa: float = DEFAULT_PIPELINE_PRESSURE_PA,
-
-    working_gas_volume_per_cavern_sm3: float = DEFAULT_WORKING_GAS_VOLUME_PER_CAVERN_SM3,
-
-    maximum_withdrawal_flow_per_cavern_million_sm3_per_day: float = DEFAULT_MAXIMUM_WITHDRAWAL_FLOW_PER_CAVERN_MILLION_SM3_PER_DAY,
-
-    last_cemented_casing_shoe_m: float = DEFAULT_LAST_CEMENTED_CASING_SHOE_M,
-    drilling_complexity_index: float = DEFAULT_DRILLING_COMPLEXITY_INDEX,
-
-    fresh_water_pipeline_length_km: float = DEFAULT_FRESH_WATER_PIPELINE_LENGTH_KM,
-    brine_disposal_pipeline_length_km: float = DEFAULT_BRINE_DISPOSAL_PIPELINE_LENGTH_KM,
-    
-    debrining_flowrate_per_cavern_m3_per_hour: float = DEFAULT_DEBRINING_FLOWRATE_PER_CAVERN_M3_PER_HOUR,
-
-    compression_method: CompressionMethod = DEFAULT_COMPRESSION_METHOD,
-
-    purification_factor: float = DEFAULT_PURIFICATION_FACTOR,
-
-    number_leaching_pumps: float = DEFAULT_NUMBER_LEACHING_PUMPS,
-
-    field_line_length_per_well_head_km = DEFAULT_FIELD_LINE_LENGTH_PER_WELL_HEAD_KM
 
 ) -> StorageProject:
     """Construct a complete salt cavern StorageProject.
@@ -120,10 +71,10 @@ def construct_salt_cavern_project(
     #construct StorageInventory
     inventory = construct_storage_inventory(
         working_gas_capacity_kwh_lhv=working_gas_capacity_kwh_lhv,
-        temperature_k=temperature_k,
-        maximum_pressure_pa=maximum_operating_pressure_pa,
-        minimum_pressure_pa=minimum_operating_pressure_pa,
-        abandonment_pressure_pa=abandonment_pressure_pa,
+        temperature_k=assumptions.general.temperature_k,
+        maximum_pressure_pa=assumptions.general.maximum_operating_pressure_pa,
+        minimum_pressure_pa=assumptions.general.minimum_operating_pressure_pa,
+        abandonment_pressure_pa=assumptions.general.abandonment_pressure_pa,
     )
 
     #construct StorageFlows
@@ -134,19 +85,19 @@ def construct_salt_cavern_project(
 
     #construct StoragePressures
     pressures = construct_storage_pressures(
-        maximum_operating_pressure_pa=maximum_operating_pressure_pa,
-        minimum_operating_pressure_pa=minimum_operating_pressure_pa,
-        abandonment_pressure_pa=abandonment_pressure_pa,
-        pipeline_pressure_pa=pipeline_pressure_pa,
+        maximum_operating_pressure_pa=assumptions.general.maximum_operating_pressure_pa,
+        minimum_operating_pressure_pa=assumptions.general.minimum_operating_pressure_pa,
+        abandonment_pressure_pa=assumptions.general.abandonment_pressure_pa,
+        pipeline_pressure_pa=assumptions.general.pipeline_pressure_pa,
     )
 
     purification = construct_purification(
-        purification_factor=purification_factor
+        purification_factor=assumptions.general.purification_factor
     )
 
     #determine number of caverns, number of well heads, and actual per cavern withdrawal requirements
-    number_caverns_for_storage_capacity_requirements = ceil(inventory.working_gas_h2_volume_sm3 / working_gas_volume_per_cavern_sm3)
-    number_caverns_for_withdrawal_requirements = ceil(flows.withdrawal_flow_million_sm3_per_day / maximum_withdrawal_flow_per_cavern_million_sm3_per_day)
+    number_caverns_for_storage_capacity_requirements = ceil(inventory.working_gas_h2_volume_sm3 / assumptions.technology_specific.working_gas_volume_per_cavern_sm3)
+    number_caverns_for_withdrawal_requirements = ceil(flows.withdrawal_flow_million_sm3_per_day / assumptions.technology_specific.maximum_withdrawal_flow_per_cavern_million_sm3_per_day)
     number_caverns = max(number_caverns_for_storage_capacity_requirements, number_caverns_for_withdrawal_requirements)
     # withdrawal_flow_per_cavern_million_sm3_per_day = flows.withdrawal_flow_million_sm3_per_day / number_caverns
     
@@ -160,20 +111,20 @@ def construct_salt_cavern_project(
 
     #construct DrillingDesign
     drilling = construct_drilling_design(
-        last_cemented_casing_shoe_m=last_cemented_casing_shoe_m,
-        drilling_complexity_index=drilling_complexity_index,
+        last_cemented_casing_shoe_m=assumptions.technology_specific.last_cemented_casing_shoe_m,
+        drilling_complexity_index=assumptions.general.drilling_complexity_index,
     )
 
     #construct FieldInterconnectionDesign
     field_interconnection = construct_field_interconnection_design(
-        field_line_length_per_well_head_km=field_line_length_per_well_head_km,
-        field_line_length_km=field_line_length_per_well_head_km*wells.number_well_heads,
+        field_line_length_per_well_head_km=assumptions.general.field_line_length_per_well_head_km,
+        field_line_length_km=assumptions.general.field_line_length_per_well_head_km*wells.number_well_heads,
     )
 
     #construct SaltLeachingDesign
     salt_leaching = construct_salt_leaching_design(
-        fresh_water_pipeline_length_km=fresh_water_pipeline_length_km,
-        brine_disposal_pipeline_length_km=brine_disposal_pipeline_length_km,
+        fresh_water_pipeline_length_km=assumptions.technology_specific.fresh_water_pipeline_length_km,
+        brine_disposal_pipeline_length_km=assumptions.technology_specific.brine_disposal_pipeline_length_km,
         free_gas_volume_per_cavern_thousand_m3=(
             inventory.required_storage_volume_m3 / wells.number_caverns / 1000
         ),
@@ -184,7 +135,7 @@ def construct_salt_cavern_project(
             salt_leaching.free_gas_volume_per_cavern_thousand_m3
         ),
         number_caverns=wells.number_caverns,
-        number_working_leaching_pumps=number_leaching_pumps,
+        number_working_leaching_pumps=assumptions.technology_specific.number_leaching_pumps,
     )
 
     salt_conversion_process = construct_salt_conversion_process(
@@ -193,18 +144,18 @@ def construct_salt_cavern_project(
             salt_leaching.free_gas_volume_per_cavern_thousand_m3
         ),
         debrining_flowrate_per_cavern_m3_per_hour=(
-            debrining_flowrate_per_cavern_m3_per_hour
+            assumptions.technology_specific.debrining_flowrate_per_cavern_m3_per_hour
         ),
     )
 
     #construct CompressionResult
     compression = calculate_compression(
         CompressionInput(
-            inlet_pressure_pa=pipeline_pressure_pa,
-            outlet_pressure_pa=maximum_operating_pressure_pa,
-            inlet_temperature_k=temperature_k,
+            inlet_pressure_pa=assumptions.general.pipeline_pressure_pa,
+            outlet_pressure_pa=assumptions.general.maximum_operating_pressure_pa,
+            inlet_temperature_k=assumptions.general.temperature_k,
             mass_flow_kg_s=flows.injection_flow_kg_per_s,
-            method=compression_method,
+            method=assumptions.general.compression_method,
         )
     )
 
