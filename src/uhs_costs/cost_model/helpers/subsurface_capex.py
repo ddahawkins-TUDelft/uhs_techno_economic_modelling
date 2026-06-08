@@ -351,7 +351,7 @@ def cushion_gas_cost_eur_simple(
 
     Returns EUR.
     """
-    
+    # ensure cushion gas only include h2 component of injection and does not account for methane already in the field
     _validate_positive(cushion_gas_mass_kg, "cushion_gas_mass_kg")
     _validate_positive(hydrogen_cost_eur_per_kg, "hydrogen_cost_eur_per_kg")
 

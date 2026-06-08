@@ -18,6 +18,9 @@ uhs_techno_economic_modelling = { path = ".", editable = true }
 run-model = "python scripts/run_model.py"
 test = "pytest"
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pixi.dependencies]
 python = ">=3.11"
 pandas = ">=3.0.3,<4"

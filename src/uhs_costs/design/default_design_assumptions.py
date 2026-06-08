@@ -17,7 +17,7 @@ class GeneralDesignAssumptions:
     """Technology-independent design and physical assumptions."""
 
     # Physical characteristics
-    temperature_k: float = 0
+    temperature_k: float | None = None
 
     # Design pressure constraints
     minimum_operating_pressure_pa: float = 0
@@ -32,10 +32,14 @@ class GeneralDesignAssumptions:
     drilling_complexity_index: float = 1.0
 
     #cleaning
-    purification_factor: float = 0.0
+    purification_factor: float = 0.0 #this is modified by construct_general_design_assumptions() below. TODO: should be a tech-specific parameter in the future
+
+    #reference depth
+    reference_reservoir_depth_m: float | None = None
 
     # Compression
     compression_method: CompressionMethod = CompressionMethod.HGSM_POLYTROPIC
+    compressor_availability_factor: float = 0.9 #source=https://doi.org/10.1002/ente.202500552
 
 
 @dataclass(frozen=True)
@@ -47,7 +51,7 @@ class SaltCavernDesignAssumptions:
     maximum_withdrawal_flow_per_cavern_million_sm3_per_day: float = 2.79
 
     # Drilling constraints
-    last_cemented_casing_shoe_m: float = 1_000.0
+    # last_cemented_casing_shoe_m: float = 1_000.0   # replaced by reference_reservoir_depth_m
 
     # Leaching constraints
     fresh_water_pipeline_length_km: float = 15.0
@@ -58,23 +62,42 @@ class SaltCavernDesignAssumptions:
 
 
 @dataclass(frozen=True)
-class PorousMediaDesignAssumptions:
-    """Technology-specific design assumptions for depleted gas fields and aquifers.
+class DepletedGasFieldDesignAssumptions:
+    """Technology-specific design assumptions for depleted gas fields. """
 
-    Add porous-media-specific assumptions here once they are needed. For example:
+    #wells
+    number_existing_wells: int = 0
 
-    cushion_gas_fraction: float
-    number_existing_wells: int
-    number_new_wells: int
-    reservoir_depth_m: float
-    reservoir_permeability_md: float
-    """
+    # Drilling constraints
+    # last_cemented_casing_shoe_m: float = 1_200.0 #https://publica-rest.fraunhofer.de/server/api/core/bitstreams/841ea3eb-07e5-4df6-a897-10e0daba18d7/content
+    
+    # flow rate constraints
+    maximum_withdrawal_flow_site_million_sm3_per_day: float = 8.25
 
-    pass
+    #well heads
+    number_observation_well_heads: int = 6
+    number_production_well_heads: int = 24
+
+@dataclass(frozen=True)
+class AquiferDesignAssumptions:
+    """Technology-specific design assumptions for aquifers. """
+
+    #wells
+    number_existing_wells: int = 0
+
+    # Drilling constraints
+    # last_cemented_casing_shoe_m: float = 1_300.0 #Sized based on Suliszewo reservoir, https://doi.org/10.1016/j.ijhydene.2022.09.284
+    
+    # flow rate constraints
+    maximum_withdrawal_flow_site_million_sm3_per_day: float = 8.52 #derived from 8.4kg/s limit suggested by https://doi.org/10.1016/j.ijhydene.2022.09.284 
+
+    #well heads
+    number_observation_well_heads: int = 6 #taking Hystories default assumption
+    number_production_well_heads: int = 24
 
 
 TechnologySpecificDesignAssumptions = (
-    SaltCavernDesignAssumptions | PorousMediaDesignAssumptions
+    SaltCavernDesignAssumptions | DepletedGasFieldDesignAssumptions | AquiferDesignAssumptions
 )
 
 
@@ -149,25 +172,47 @@ def construct_general_design_assumptions(
     }:
         assumptions = GeneralDesignAssumptions(
             purification_factor=0.0,
-            abandonment_pressure_pa=0.0,
+            reference_reservoir_depth_m=1_000.0,
         )
 
     elif storage_technology in {
         StorageTechnology.DEPLETED_GAS_FIELD,
+    }:
+        assumptions = GeneralDesignAssumptions(
+            purification_factor=1.5,
+            reference_reservoir_depth_m=1_200.0,
+        )
+    elif storage_technology in {
         StorageTechnology.AQUIFER,
     }:
         assumptions = GeneralDesignAssumptions(
             purification_factor=1.5,
-            # Replace this later if porous media need a non-zero abandonment pressure.
-            abandonment_pressure_pa=0.0,
+            reference_reservoir_depth_m=1_300.0,
         )
 
     else:
         raise ValueError(
             f"{storage_technology} is not a valid input for storage_technology"
         )
+    
+    assumptions = apply_dataclass_overrides(assumptions, overrides)
 
-    return apply_dataclass_overrides(assumptions, overrides)
+    if assumptions.temperature_k in {0, None}:
+        if assumptions.reference_reservoir_depth_m in {0, None}:
+            raise ValueError(
+                "Either temperature_k or reference_reservoir_depth_m must be assigned."
+            )
+
+        assumptions = replace(
+            assumptions,
+            temperature_k=calculate_temperature_from_depth_k(
+                depth_m=assumptions.reference_reservoir_depth_m,
+                surface_temperature_k=283.15,
+                geothermal_gradient_k_per_km=30.0,
+            ),
+        )
+
+    return assumptions
 
 
 def construct_technology_specific_design_assumptions(
@@ -178,12 +223,10 @@ def construct_technology_specific_design_assumptions(
 
     if storage_technology == StorageTechnology.SALT_CAVERN:
         assumptions = SaltCavernDesignAssumptions()
-
-    elif storage_technology in {
-        StorageTechnology.DEPLETED_GAS_FIELD,
-        StorageTechnology.AQUIFER,
-    }:
-        assumptions = PorousMediaDesignAssumptions()
+    elif storage_technology in {  StorageTechnology.DEPLETED_GAS_FIELD }:
+        assumptions = DepletedGasFieldDesignAssumptions()
+    elif storage_technology in { StorageTechnology.AQUIFER }:
+        assumptions = AquiferDesignAssumptions()
 
     elif storage_technology == StorageTechnology.LINED_ROCK_CAVERN:
         raise NotImplementedError(
@@ -251,3 +294,40 @@ def apply_dataclass_overrides(
         )
 
     return replace(instance, **overrides)
+
+def calculate_temperature_from_depth_k(
+    depth_m: float,
+    surface_temperature_k: float = 283.15,
+    geothermal_gradient_k_per_km: float = 30.0,
+) -> float:
+    """Estimate subsurface temperature from depth using a linear geothermal gradient.
+
+    This is a screening-level approximation suitable when site-specific
+    reservoir temperature data are unavailable.
+
+    Parameters
+    ----------
+    depth_m:
+        Storage depth below ground level in metres.
+
+    surface_temperature_k:
+        Reference near-surface temperature in degrees Kelvin.
+
+    geothermal_gradient_k_per_km:
+        Geothermal gradient in degrees Kelvin per kilometre.
+
+    Returns
+    -------
+    float
+        Estimated subsurface temperature in Kelvin.
+    """
+
+    if depth_m < 0:
+        raise ValueError("depth_m must be non-negative.")
+
+    temperature_k = (
+        surface_temperature_k
+        + geothermal_gradient_k_per_km * depth_m / 1000.0
+    )
+
+    return temperature_k

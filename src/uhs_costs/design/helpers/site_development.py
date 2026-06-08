@@ -151,8 +151,11 @@ def construct_salt_conversion_process(
 def construct_porous_first_fill_process(
     working_gas_volume_million_sm3: float,
     cushion_gas_volume_million_sm3: float,
-    withdrawal_flow_million_sm3_per_day: float,
-    withdrawal_to_injection_ratio: float,
+    injection_flow_million_sm3_per_day: float, #HyStories implements this wrt to Withdrawal_flow / WTIR = injection, 
+                                            #i have skipped the step and instead derived it from injection
+    injection_availability_factor: float, #an additional factor beyond the hystories model that accounts for
+                                            # injection uptime during first fill, availability of h2 supply,
+                                            # discontinuous injection to allow for geological structures to settle
 ) -> PorousFirstFillProcess:
     _validate_positive(
         working_gas_volume_million_sm3,
@@ -163,23 +166,18 @@ def construct_porous_first_fill_process(
         "cushion_gas_volume_million_sm3",
     )
     _validate_positive(
-        withdrawal_flow_million_sm3_per_day,
-        "withdrawal_flow_million_sm3_per_day",
+        injection_flow_million_sm3_per_day,
+        "injection_flow_million_sm3_per_day",
     )
-    _validate_positive(
-        withdrawal_to_injection_ratio,
-        "withdrawal_to_injection_ratio",
-    )
-
+   
     first_gas_fill_duration_years = (
         60
         + 1.10
-        * withdrawal_to_injection_ratio
         * (working_gas_volume_million_sm3 + cushion_gas_volume_million_sm3)
-        / withdrawal_flow_million_sm3_per_day
+        / (injection_flow_million_sm3_per_day*injection_availability_factor)
     ) / 365
-
-    raise Exception('construct_porous_first_fill_process within site_development.py needs to be decomposed into injection and withdrawal elements ')
+    
+    UserWarning('FGF costs scaled with injection rate, not just storage capacity!')
 
     return PorousFirstFillProcess(
         first_gas_fill_duration_years=first_gas_fill_duration_years,

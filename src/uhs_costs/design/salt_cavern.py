@@ -39,7 +39,7 @@ from uhs_costs.design.default_design_assumptions import HyStoriesDesignAssumptio
 ASSUMPTIONS =  construct_hystories_design_assumptions(
     storage_technology=StorageTechnology.SALT_CAVERN,
     general_overrides={
-        'temperature_k': 342,
+        'reference_reservoir_depth_m': 1000,
         'minimum_operating_pressure_pa': 9.0e6,
         'maximum_operating_pressure_pa': 24e6,
         'abandonment_pressure_pa': 0,
@@ -52,7 +52,7 @@ ASSUMPTIONS =  construct_hystories_design_assumptions(
 #
 # ----------------------------------------------------------------------------------------------------
 
-def construct_salt_cavern_project(
+def construct_project(
     working_gas_capacity_kwh_lhv: float,
     withdrawal_flow_kw_h2_lhv: float,
     injection_flow_kw_h2_lhv: float,
@@ -105,13 +105,14 @@ def construct_salt_cavern_project(
 
     #construct WellDesign
     wells = construct_well_design(
+        well_temperature_k=assumptions.general.temperature_k,
         number_well_heads=number_well_heads,
         number_caverns=number_caverns,
     )
 
     #construct DrillingDesign
     drilling = construct_drilling_design(
-        last_cemented_casing_shoe_m=assumptions.technology_specific.last_cemented_casing_shoe_m,
+        last_cemented_casing_shoe_m=assumptions.general.reference_reservoir_depth_m,
         drilling_complexity_index=assumptions.general.drilling_complexity_index,
     )
 

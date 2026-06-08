@@ -35,7 +35,6 @@ class HyStoriesCostAssumptions:
     subsurface_abex_fraction: float = 0.20
     
 def construct_hystories_cost_assumptions(
-    storage_technology: StorageTechnology,
     overrides: dict[str, object] | None = None,
 ) -> HyStoriesCostAssumptions:
     
