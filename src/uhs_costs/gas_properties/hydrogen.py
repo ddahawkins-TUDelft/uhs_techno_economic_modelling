@@ -124,3 +124,13 @@ def standard_volume_m3_from_mol(
 
     return mol * gas_constant_j_per_mol_k * standard_temperature_k / standard_pressure_pa
 
+def pressure_from_density(
+    density_kg_m3: float,
+    temperature_k: float,
+) -> float:
+    return PropsSI(
+        "P",
+        "Dmass", density_kg_m3,
+        "T", temperature_k,
+        HYDROGEN,
+    )

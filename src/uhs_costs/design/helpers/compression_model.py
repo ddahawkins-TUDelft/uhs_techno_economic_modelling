@@ -140,7 +140,6 @@ class CompressionResult:
     number_of_trains: int
     power_per_train_kw: float | None
 
-    
     design_power_factor: float
     total_design_brake_power_kw: float | None
     total_design_electric_power_kw: float | None
@@ -148,6 +147,8 @@ class CompressionResult:
 
     injection_flow_million_sm3_per_day: float | None
     h2_lhv_flow_kw: float | None
+
+    electricity_kwh_per_kwh_h2_lhv: float | None
 
 # -------------------------------------------------------------------------------------------------------
 #
@@ -555,6 +556,10 @@ def calculate_hgsm_polytropic_compression(
         number_of_trains = ceil(total_design_electric_power / inputs.max_train_power_kw)
         power_per_train_kw = total_design_electric_power / number_of_trains
 
+    electricity_kwh_per_kwh_h2_lhv = (
+        total_electric_power / h2_lhv_flow
+    )
+
     return CompressionResult(
         method=CompressionMethod.HGSM_POLYTROPIC,
         inlet_pressure_pa=inputs.inlet_pressure_pa,
@@ -577,7 +582,8 @@ def calculate_hgsm_polytropic_compression(
         power_per_train_kw=power_per_train_kw,
         design_power_per_train_kw=design_power_per_train_kw,
         injection_flow_million_sm3_per_day=injection_flow,
-        h2_lhv_flow_kw=h2_lhv_flow
+        h2_lhv_flow_kw=h2_lhv_flow,
+        electricity_kwh_per_kwh_h2_lhv=electricity_kwh_per_kwh_h2_lhv
     )
 
 def calculate_hystories_ticbp_compression(

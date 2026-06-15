@@ -8,7 +8,7 @@ from CoolProp.CoolProp import PropsSI
 
 from uhs_costs.constants import BAR_TO_PA, CELSIUS_TO_KELVIN
 
-Methane = 'Methane'
+METHANE = 'Methane'
 
 def celsius_to_kelvin(temperature_c: float) -> float:
     """Convert temperature from degrees Celsius to Kelvin."""
@@ -45,7 +45,7 @@ def density(
         pressure_pa,
         "T",
         temperature_k,
-        Methane,
+        METHANE,
     )
 
 def z_factor(
@@ -59,7 +59,7 @@ def z_factor(
         pressure_pa,
         "T",
         temperature_k,
-        Methane,
+        METHANE,
     )
 
 def isothermal_compressibility(
@@ -73,7 +73,7 @@ def isothermal_compressibility(
         pressure_pa,
         "T",
         temperature_k,
-        Methane,
+        METHANE,
     )
 
 def molar_density(
@@ -87,14 +87,14 @@ def molar_density(
         pressure_pa,
         "T",
         temperature_k,
-        Methane,
+        METHANE,
     )
 
 def molar_mass() -> float:
     """Return molar mass in kg/mol."""
     return PropsSI(
         "M",
-        Methane,
+        METHANE,
     )
 
 def standard_volume_m3_from_mol(
@@ -123,3 +123,14 @@ def standard_volume_m3_from_mol(
     gas_constant_j_per_mol_k = 8.314462618
 
     return mol * gas_constant_j_per_mol_k * standard_temperature_k / standard_pressure_pa
+
+def pressure_from_density(
+    density_kg_m3: float,
+    temperature_k: float,
+) -> float:
+    return PropsSI(
+        "P",
+        "Dmass", density_kg_m3,
+        "T", temperature_k,
+        METHANE,
+    )
