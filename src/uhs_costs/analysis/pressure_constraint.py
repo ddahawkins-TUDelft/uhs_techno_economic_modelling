@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping
+from typing import Mapping, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -29,6 +29,10 @@ class PressureLimitedFlowPoint:
     soc: float
     h2_inventory_kWh: float
     h2_inventory_kg: float
+    h2_inventory_after_withdrawal_kWh: float
+    h2_inventory_after_injection_kWh: float
+    soc_after_withdrawal_pressure_basis: float
+    soc_after_injection_pressure_basis: float
     withdrawal_kg_per_day: float
     injection_kg_per_day: float
     withdrawal_kg_s: float
@@ -263,6 +267,21 @@ def calculate_pressure_limited_flow_curve(
             h2_upper_bound_kg=h2_upper_bound_kg,
         )
 
+        h2_inventory_current_kWh = m_h2_current * HYDROGEN_LHV_KWH_PER_KG
+        h2_inventory_after_withdrawal_kWh = (
+            m_h2_after_withdrawal * HYDROGEN_LHV_KWH_PER_KG
+        )
+        h2_inventory_after_injection_kWh = (
+            m_h2_after_injection * HYDROGEN_LHV_KWH_PER_KG
+        )
+
+        soc_after_withdrawal_pressure_basis = (
+            (m_h2_after_withdrawal - m_h2_min) / (m_h2_max - m_h2_min)
+        )
+        soc_after_injection_pressure_basis = (
+            (m_h2_after_injection - m_h2_min) / (m_h2_max - m_h2_min)
+        )
+
         withdrawal_kg_per_day = m_h2_current - m_h2_after_withdrawal
         injection_kg_per_day = m_h2_after_injection - m_h2_current
 
@@ -280,8 +299,12 @@ def calculate_pressure_limited_flow_curve(
                 pressure_pa=p_current,
                 pressure_bar=p_current / BAR_TO_PA,
                 soc=soc,
-                h2_inventory_kWh=m_h2_current*HYDROGEN_LHV_KWH_PER_KG,
+                h2_inventory_kWh=h2_inventory_current_kWh,
                 h2_inventory_kg=m_h2_current,
+                h2_inventory_after_withdrawal_kWh=h2_inventory_after_withdrawal_kWh,
+                h2_inventory_after_injection_kWh=h2_inventory_after_injection_kWh,
+                soc_after_withdrawal_pressure_basis=soc_after_withdrawal_pressure_basis,
+                soc_after_injection_pressure_basis=soc_after_injection_pressure_basis,
                 withdrawal_kg_per_day=withdrawal_kg_per_day,
                 injection_kg_per_day=injection_kg_per_day,
                 withdrawal_kg_s=withdrawal_kg_s,
@@ -347,6 +370,11 @@ def calculate_pressure_limited_flow_curves_for_projects(
             conservative=conservative_cem_fit,
         )
 
+        print_cem_soc_endpoint_constraints(
+            results_by_project=results_by_project,
+            conservative=conservative_cem_fit,
+        )
+
     return results_by_project
 def plot_curves(
     results: pd.DataFrame | Mapping[str, pd.DataFrame],
@@ -361,6 +389,9 @@ def plot_curves(
     projects: Mapping[str, StorageProject] | None = None,
     show_design_capacity: bool = False,
     horizontal_lines: Mapping[str, float] | None = None,
+    line_colors: Mapping[str, str] | Sequence[str] | None = None,
+    horizontal_line_colors: Mapping[str, str] | None = None,
+    design_capacity_colors: Mapping[str, str] | None = None,
     output_path: str | Path | None = None,
     show: bool = True,
 ) -> None:
@@ -380,6 +411,16 @@ def plot_curves(
 
     fig, ax = plt.subplots(figsize=(8, 5))
 
+    if isinstance(line_colors, Mapping):
+        colour_lookup = dict(line_colors)
+    elif line_colors is not None:
+        colour_lookup = {
+            label: colour
+            for label, colour in zip(labelled_results.keys(), line_colors)
+        }
+    else:
+        colour_lookup = {}
+
     for label, df in labelled_results.items():
         if x not in df.columns:
             raise ValueError(
@@ -397,6 +438,7 @@ def plot_curves(
             df[x] * x_scale,
             df[y] * y_scale,
             label=label,
+            color=colour_lookup.get(label),
         )
 
     # User-specified horizontal lines
@@ -406,6 +448,7 @@ def plot_curves(
                 value * y_scale,
                 linestyle="--",
                 label=label,
+                color=(horizontal_line_colors or {}).get(label),
             )
 
     # Automatically inferred design-capacity lines
@@ -431,6 +474,7 @@ def plot_curves(
                 design_capacity_kw * y_scale,
                 linestyle="--",
                 label=design_label,
+                color=(design_capacity_colors or {}).get(label),
             )
 
     ax.set_xlabel(xlabel or x)
@@ -458,6 +502,132 @@ def plot_curves(
         plt.show()
     else:
         plt.close(fig)
+
+def plot_soc_change_bounds(
+    results: pd.DataFrame | Mapping[str, pd.DataFrame],
+    *,
+    x: str = "soc",
+    title: str | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    show_linear_fit: bool = True,
+    conservative_fit: bool = True,
+    line_colors: Mapping[str, str] | Sequence[str] | None = None,
+    min_color: str | None = None,
+    max_color: str | None = None,
+    min_fit_color: str | None = None,
+    max_fit_color: str | None = None,
+    output_path: str | Path | None = None,
+    show: bool = True,
+) -> None:
+    """
+    Plot calculated minimum and maximum signed 24-hour SoC changes.
+
+    The minimum change is negative and represents the withdrawal-side limit. The
+    maximum change is positive and represents the injection-side limit. If
+    show_linear_fit=True, dashed lines show linearised constraints fitted across
+    all supplied projects.
+    """
+    if isinstance(results, pd.DataFrame):
+        labelled_results = {"case": results}
+    else:
+        labelled_results = dict(results)
+
+    if not labelled_results:
+        raise ValueError("No results provided for plotting.")
+
+    required_columns = {x, "soc_change_min_24h", "soc_change_max_24h"}
+    for label, df in labelled_results.items():
+        missing = required_columns - set(df.columns)
+        if missing:
+            raise ValueError(
+                f"Missing columns for {label!r}: {sorted(missing)}. "
+                f"Available columns: {list(df.columns)}"
+            )
+
+    if isinstance(line_colors, Mapping):
+        colour_lookup = dict(line_colors)
+    elif line_colors is not None:
+        colour_lookup = {
+            label: colour
+            for label, colour in zip(labelled_results.keys(), line_colors)
+        }
+    else:
+        colour_lookup = {}
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    for label, df in labelled_results.items():
+        project_color = colour_lookup.get(label)
+        lower_color = min_color or project_color
+        upper_color = max_color or project_color
+
+        ax.plot(
+            df[x],
+            df["soc_change_min_24h"],
+            label=f"{label} minimum 24h SoC change",
+            color=lower_color,
+        )
+        ax.plot(
+            df[x],
+            df["soc_change_max_24h"],
+            label=f"{label} maximum 24h SoC change",
+            color=upper_color,
+        )
+
+    if show_linear_fit:
+        x_fit = np.linspace(0.0, 1.0, 200)
+        lower_intercept, lower_slope = fit_linear_soc_endpoint_bound(
+            results_by_project=labelled_results,
+            y="soc_change_min_24h",
+            x=x,
+            bound="lower",
+            conservative=conservative_fit,
+        )
+        upper_intercept, upper_slope = fit_linear_soc_endpoint_bound(
+            results_by_project=labelled_results,
+            y="soc_change_max_24h",
+            x=x,
+            bound="upper",
+            conservative=conservative_fit,
+        )
+
+        ax.plot(
+            x_fit,
+            lower_intercept + lower_slope * x_fit,
+            linestyle="--",
+            color=min_fit_color or min_color,
+            label="Linearised minimum 24h SoC change",
+        )
+        ax.plot(
+            x_fit,
+            upper_intercept + upper_slope * x_fit,
+            linestyle="--",
+            color=max_fit_color or max_color,
+            label="Linearised maximum 24h SoC change",
+        )
+
+    ax.axhline(0.0, linewidth=0.8)
+    ax.set_xlabel(xlabel or x)
+    ax.set_ylabel(ylabel or "Signed 24-hour change in state of charge [-]")
+
+    if title is not None:
+        ax.set_title(title)
+
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+
+    if output_path is not None:
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(output_path, dpi=300)
+
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
+
 def save_results(
     results_by_project: Mapping[str, pd.DataFrame],
     output_dir: str | Path,
@@ -541,7 +711,300 @@ def add_capacity_normalised_columns(
         df["injection_kw_lhv"] / working_gas_capacity_kwh_lhv
     )
 
+    # Signed 24-hour change in fractional state of charge.
+    # Negative values correspond to withdrawal; positive values correspond to injection.
+    df["soc_change_min_24h"] = -(
+        df["withdrawal_kwh_per_day"] / working_gas_capacity_kwh_lhv
+    )
+    df["soc_change_max_24h"] = (
+        df["injection_kwh_per_day"] / working_gas_capacity_kwh_lhv
+    )
+
+    # Minimum and maximum admissible future state of charge after 24 hours.
+    df["soc_t_plus_24_min"] = df["soc"] + df["soc_change_min_24h"]
+    df["soc_t_plus_24_max"] = df["soc"] + df["soc_change_max_24h"]
+
     return df
+
+
+def fit_linear_soc_endpoint_bound(
+    results_by_project: Mapping[str, pd.DataFrame],
+    *,
+    y: str,
+    x: str = "soc",
+    bound: str,
+    soc_min: float = 0.0,
+    soc_max: float = 1.0,
+    conservative: bool = True,
+) -> tuple[float, float]:
+    """
+    Fit a linear future-SoC endpoint bound.
+
+    Fits:
+        y = intercept + slope * x
+
+    Usually:
+        x = current fractional SoC [-]
+        y = admissible future fractional SoC 24 hours later [-]
+
+    If conservative=True:
+        - for a lower bound, the intercept is shifted upward so that the fitted
+          line is never below the calculated lower endpoint;
+        - for an upper bound, the intercept is shifted downward so that the fitted
+          line is never above the calculated upper endpoint.
+    """
+    if bound not in {"lower", "upper"}:
+        raise ValueError("bound must be either 'lower' or 'upper'.")
+
+    combined = pd.concat(
+        [
+            df.assign(project=label)
+            for label, df in results_by_project.items()
+        ],
+        ignore_index=True,
+    )
+
+    fit_df = combined[
+        (combined[x] >= soc_min)
+        & (combined[x] <= soc_max)
+    ].copy()
+
+    if fit_df.empty:
+        raise ValueError(
+            "No data available for fitting. Check soc_min, soc_max, and input data."
+        )
+
+    if y not in fit_df.columns:
+        raise ValueError(
+            f"Column {y!r} not found. Available columns: {list(fit_df.columns)}"
+        )
+
+    slope, intercept = np.polyfit(
+        fit_df[x].to_numpy(),
+        fit_df[y].to_numpy(),
+        deg=1,
+    )
+
+    if conservative:
+        y_pred = intercept + slope * fit_df[x].to_numpy()
+        y_true = fit_df[y].to_numpy()
+
+        if bound == "lower":
+            max_underestimate = np.max(y_true - y_pred)
+            if max_underestimate > 0:
+                intercept += max_underestimate
+        else:
+            max_overestimate = np.max(y_pred - y_true)
+            if max_overestimate > 0:
+                intercept -= max_overestimate
+
+    return intercept, slope
+
+
+def print_cem_soc_endpoint_constraints(
+    results_by_project: Mapping[str, pd.DataFrame],
+    *,
+    soc_min: float = 0.0,
+    soc_max: float = 1.0,
+    conservative: bool = True,
+) -> None:
+    """
+    Print CEM-ready 24-hour endpoint SoC constraints.
+
+    These are equivalent to the withdrawal and injection change constraints, but
+    are written directly as lower and upper bounds on the state of charge 24
+    hours later:
+
+        SoC_t_plus_24 >= a_min * SoC_max + b_min * SoC_t
+        SoC_t_plus_24 <= a_max * SoC_max + b_max * SoC_t
+
+    where SoC_t and SoC_max are both expressed in energy units [kWh].
+    """
+    lower_intercept, lower_slope = fit_linear_soc_endpoint_bound(
+        results_by_project=results_by_project,
+        y="soc_t_plus_24_min",
+        x="soc",
+        bound="lower",
+        soc_min=soc_min,
+        soc_max=soc_max,
+        conservative=conservative,
+    )
+
+    upper_intercept, upper_slope = fit_linear_soc_endpoint_bound(
+        results_by_project=results_by_project,
+        y="soc_t_plus_24_max",
+        x="soc",
+        bound="upper",
+        soc_min=soc_min,
+        soc_max=soc_max,
+        conservative=conservative,
+    )
+
+    print()
+    print("=" * 88)
+    print("CEM pressure-ramp constraint: future SoC endpoint bounds")
+    print("=" * 88)
+    print()
+    print("Fitted future-SoC endpoint curves:")
+    print(
+        "    soc_t_plus_24_min = "
+        f"{lower_intercept:.12f} + ({lower_slope:.12f}) * fractional_soc_t"
+    )
+    print(
+        "    soc_t_plus_24_max = "
+        f"{upper_intercept:.12f} + ({upper_slope:.12f}) * fractional_soc_t"
+    )
+    print()
+    print("Using:")
+    print("    fractional_soc_t = SoC_t / SoC_max")
+    print("    SoC_t             = stored hydrogen energy at time t [kWh]")
+    print("    SoC_t_plus_24     = stored hydrogen energy 24 hours later [kWh]")
+    print("    SoC_max           = installed storage capacity [kWh]")
+    print()
+    print("CEM constraints:")
+    print(
+        "    SoC_t_plus_24 >= "
+        f"{lower_intercept:.12f} * SoC_max "
+        f"+ ({lower_slope:.12f}) * SoC_t"
+    )
+    print(
+        "    SoC_t_plus_24 <= "
+        f"{upper_intercept:.12f} * SoC_max "
+        f"+ ({upper_slope:.12f}) * SoC_t"
+    )
+    print()
+    print("Units:")
+    print("    SoC_t_plus_24: kWh")
+    print("    SoC_t:         kWh")
+    print("    SoC_max:       kWh")
+    print("    coefficients:  kWh per kWh over 24 hours")
+    print()
+    print("=" * 88)
+    print()
+
+
+def plot_soc_endpoint_bounds(
+    results: pd.DataFrame | Mapping[str, pd.DataFrame],
+    *,
+    x: str = "soc",
+    title: str | None = None,
+    xlabel: str | None = None,
+    ylabel: str | None = None,
+    show_linear_fit: bool = True,
+    conservative_fit: bool = True,
+    line_colors: Mapping[str, str] | Sequence[str] | None = None,
+    min_color: str | None = None,
+    max_color: str | None = None,
+    min_fit_color: str | None = None,
+    max_fit_color: str | None = None,
+    output_path: str | Path | None = None,
+    show: bool = True,
+) -> None:
+    """
+    Plot calculated minimum and maximum admissible future SoC endpoints.
+
+    The solid lines show the calculated values at each sampled pressure/current
+    SoC. If show_linear_fit=True, dashed lines show the linearised lower and
+    upper endpoint constraints fitted across all supplied projects.
+    """
+    if isinstance(results, pd.DataFrame):
+        labelled_results = {"case": results}
+    else:
+        labelled_results = dict(results)
+
+    if not labelled_results:
+        raise ValueError("No results provided for plotting.")
+
+    required_columns = {x, "soc_t_plus_24_min", "soc_t_plus_24_max"}
+    for label, df in labelled_results.items():
+        missing = required_columns - set(df.columns)
+        if missing:
+            raise ValueError(
+                f"Missing columns for {label!r}: {sorted(missing)}. "
+                f"Available columns: {list(df.columns)}"
+            )
+
+    if isinstance(line_colors, Mapping):
+        colour_lookup = dict(line_colors)
+    elif line_colors is not None:
+        colour_lookup = {
+            label: colour
+            for label, colour in zip(labelled_results.keys(), line_colors)
+        }
+    else:
+        colour_lookup = {}
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    for label, df in labelled_results.items():
+        project_color = colour_lookup.get(label)
+        lower_color = min_color or project_color
+        upper_color = max_color or project_color
+
+        ax.plot(
+            df[x],
+            df["soc_t_plus_24_min"],
+            label=f"{label} minimum $SoC_{{t+24}}$",
+            color=lower_color,
+        )
+        ax.plot(
+            df[x],
+            df["soc_t_plus_24_max"],
+            label=f"{label} maximum $SoC_{{t+24}}$",
+            color=upper_color,
+        )
+
+    if show_linear_fit:
+        x_fit = np.linspace(0.0, 1.0, 200)
+        lower_intercept, lower_slope = fit_linear_soc_endpoint_bound(
+            results_by_project=labelled_results,
+            y="soc_t_plus_24_min",
+            x=x,
+            bound="lower",
+            conservative=conservative_fit,
+        )
+        upper_intercept, upper_slope = fit_linear_soc_endpoint_bound(
+            results_by_project=labelled_results,
+            y="soc_t_plus_24_max",
+            x=x,
+            bound="upper",
+            conservative=conservative_fit,
+        )
+
+        ax.plot(
+            x_fit,
+            lower_intercept + lower_slope * x_fit,
+            linestyle="--",
+            color=min_fit_color or min_color,
+            label="Linearised minimum $SoC_{t+24}$",
+        )
+        ax.plot(
+            x_fit,
+            upper_intercept + upper_slope * x_fit,
+            linestyle="--",
+            color=max_fit_color or max_color,
+            label="Linearised maximum $SoC_{t+24}$",
+        )
+
+    ax.set_xlabel(xlabel or x)
+    ax.set_ylabel(ylabel or "Admissible state of charge 24 hours later [-]")
+
+    if title is not None:
+        ax.set_title(title)
+
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+
+    if output_path is not None:
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(output_path, dpi=300)
+
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
 
 def fit_capacity_normalised_pressure_limit(
     results_by_project: Mapping[str, pd.DataFrame],

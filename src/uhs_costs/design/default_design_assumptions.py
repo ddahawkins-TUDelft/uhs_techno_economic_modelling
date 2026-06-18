@@ -95,9 +95,31 @@ class AquiferDesignAssumptions:
     number_observation_well_heads: int = 6 #taking Hystories default assumption
     number_production_well_heads: int = 24
 
+@dataclass(frozen=True)
+class LinedRockCavernDesignAssumptions:
+    """Technology-specific design assumptions for lined rock caverns."""
+
+    # Well / cavern constraints
+    maximum_h2_mass_per_well_kg: float = 3_000_000.0
+
+    # Cavern geometry
+    maximum_cavern_radius_m: float = 20.0
+    cavern_height_m: float = 100.0
+    effective_volume_fraction: float = 0.95
+
+    # Lining design
+    steel_lining_thickness_m: float = 0.015
+    concrete_lining_thickness_m: float = 0.5
+    steel_density_kg_per_m3: float = 7850.0
+    concrete_density_kg_per_m3: float = 2500.0
+
+    # Drainage design
+    tunnel_drainage_length_m: float = 0.0
+    cavern_drainage_length_per_cavern_m: float = 100.0
+
 
 TechnologySpecificDesignAssumptions = (
-    SaltCavernDesignAssumptions | DepletedGasFieldDesignAssumptions | AquiferDesignAssumptions
+    SaltCavernDesignAssumptions | DepletedGasFieldDesignAssumptions | AquiferDesignAssumptions | LinedRockCavernDesignAssumptions
 )
 
 
@@ -166,25 +188,24 @@ def construct_general_design_assumptions(
 ) -> GeneralDesignAssumptions:
     """Construct general assumptions, including technology-dependent defaults."""
 
-    if storage_technology in {
-        StorageTechnology.SALT_CAVERN,
-        StorageTechnology.LINED_ROCK_CAVERN,
-    }:
+    if storage_technology == StorageTechnology.SALT_CAVERN:
         assumptions = GeneralDesignAssumptions(
             purification_factor=0.0,
             reference_reservoir_depth_m=1_000.0,
         )
 
-    elif storage_technology in {
-        StorageTechnology.DEPLETED_GAS_FIELD,
-    }:
+    elif storage_technology == StorageTechnology.LINED_ROCK_CAVERN:
+        assumptions = GeneralDesignAssumptions(
+            purification_factor=0.0,
+            reference_reservoir_depth_m=150.0,
+        )
+
+    elif storage_technology ==  StorageTechnology.DEPLETED_GAS_FIELD:
         assumptions = GeneralDesignAssumptions(
             purification_factor=1.5,
             reference_reservoir_depth_m=1_200.0,
         )
-    elif storage_technology in {
-        StorageTechnology.AQUIFER,
-    }:
+    elif storage_technology == StorageTechnology.AQUIFER:
         assumptions = GeneralDesignAssumptions(
             purification_factor=1.5,
             reference_reservoir_depth_m=1_300.0,
@@ -223,15 +244,13 @@ def construct_technology_specific_design_assumptions(
 
     if storage_technology == StorageTechnology.SALT_CAVERN:
         assumptions = SaltCavernDesignAssumptions()
-    elif storage_technology in {  StorageTechnology.DEPLETED_GAS_FIELD }:
+    elif storage_technology ==StorageTechnology.DEPLETED_GAS_FIELD :
         assumptions = DepletedGasFieldDesignAssumptions()
-    elif storage_technology in { StorageTechnology.AQUIFER }:
+    elif storage_technology ==StorageTechnology.AQUIFER:
         assumptions = AquiferDesignAssumptions()
 
     elif storage_technology == StorageTechnology.LINED_ROCK_CAVERN:
-        raise NotImplementedError(
-            "Lined rock cavern design assumptions have not yet been implemented."
-        )
+        assumptions = LinedRockCavernDesignAssumptions()
 
     else:
         raise ValueError(

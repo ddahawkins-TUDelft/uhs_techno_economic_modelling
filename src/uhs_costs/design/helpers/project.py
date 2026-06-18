@@ -11,8 +11,11 @@ from uhs_costs.design.helpers.site_development import (
     SaltLeachingDesign, 
     SaltLeachingProcess,
     SaltConversionProcess,
-    PorousFirstFillProcess
-    
+    PorousFirstFillProcess,
+    LinedRockCavernGeometry,
+    LinedRockCavernDrainageDesign,
+    LinedRockCavernLiningDesign,
+
     )
 from uhs_costs.design.helpers.compression_model import CompressionResult
 from uhs_costs.design.helpers.purification import Purification
@@ -39,6 +42,9 @@ class StorageProject:
     salt_leaching_process: SaltLeachingProcess | None = None
     salt_conversion_process: SaltConversionProcess | None = None
     porous_first_fill_process: PorousFirstFillProcess | None = None
+    lrc_geometry: LinedRockCavernGeometry | None = None
+    lrc_lining: LinedRockCavernLiningDesign | None = None
+    lrc_drainage: LinedRockCavernDrainageDesign | None = None
     compression: CompressionResult | None = None
     purification: Purification | None = None
 

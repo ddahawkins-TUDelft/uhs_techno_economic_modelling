@@ -376,3 +376,59 @@ def contingency_cost_eur(
     _validate_non_negative(contingency_fraction, "contingency_fraction")
 
     return contingency_fraction * base_cost_eur
+
+
+#----------------------------------------------------------------------------------------------------
+# 
+#                                Lined Rock Cavern Cost Formulae
+#                   Based on Huang et al. doi.org/10.1016/j.apenergy.2025.126564.
+#
+#----------------------------------------------------------------------------------------------------
+
+
+
+def lrc_well_capex_eur(
+    number_well_heads: int,
+    well_depth_m: float,
+    fixed_cost_eur_per_well: float,
+    variable_cost_eur_per_m: float,
+    drilling_complexity_index: float = 1.0,
+) -> float:
+    return number_well_heads * (
+        fixed_cost_eur_per_well
+        + variable_cost_eur_per_m * well_depth_m * drilling_complexity_index
+    )
+
+
+def lrc_mining_capex_eur(
+    excavation_volume_m3: float,
+    mining_cost_eur_per_m3: float,
+) -> float:
+    return excavation_volume_m3 * mining_cost_eur_per_m3
+
+
+def lrc_lining_capex_eur(
+    steel_lining_mass_tonnes: float,
+    concrete_lining_mass_tonnes: float,
+    steel_lining_cost_eur_per_tonne: float,
+    concrete_lining_cost_eur_per_tonne: float,
+    installation_fraction: float,
+) -> float:
+    material_cost_eur = (
+        steel_lining_mass_tonnes * steel_lining_cost_eur_per_tonne
+        + concrete_lining_mass_tonnes * concrete_lining_cost_eur_per_tonne
+    )
+
+    return material_cost_eur * (1 + installation_fraction)
+
+
+def lrc_drainage_capex_eur(
+    tunnel_drainage_length_m: float,
+    total_cavern_drainage_length_m: float,
+    tunnel_drainage_cost_eur_per_m: float,
+    cavern_drainage_cost_eur_per_m,
+) -> float:
+    return (
+        tunnel_drainage_length_m * tunnel_drainage_cost_eur_per_m
+        + total_cavern_drainage_length_m * cavern_drainage_cost_eur_per_m
+    )

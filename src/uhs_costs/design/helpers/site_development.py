@@ -4,7 +4,7 @@ For use and import into inputs.py
 """
 
 from __future__ import annotations
-from math import ceil
+from math import ceil, sqrt, pi
 
 from dataclasses import dataclass
 
@@ -43,6 +43,50 @@ class SaltConversionProcess:
 @dataclass(frozen=True)
 class PorousFirstFillProcess:
     first_gas_fill_duration_years: float
+
+@dataclass(frozen=True)
+class LinedRockCavernGeometry:
+    required_effective_storage_volume_m3: float
+    effective_volume_fraction: float
+
+    required_geometric_storage_volume_m3: float
+    maximum_cavern_radius_m: float
+    cavern_height_m: float
+    maximum_single_cavern_geometric_volume_m3: float
+
+    number_caverns: int
+    geometric_volume_per_cavern_m3: float
+    effective_volume_per_cavern_m3: float
+    cavern_radius_m: float
+
+    inner_surface_area_per_cavern_m2: float
+    total_inner_surface_area_m2: float
+
+
+@dataclass(frozen=True)
+class LinedRockCavernLiningDesign:
+    steel_lining_thickness_m: float
+    concrete_lining_thickness_m: float
+    steel_density_kg_per_m3: float
+    concrete_density_kg_per_m3: float
+
+    total_lined_surface_area_m2: float
+    steel_lining_volume_m3: float
+    concrete_lining_volume_m3: float
+    steel_lining_mass_kg: float
+    concrete_lining_mass_kg: float
+    steel_lining_mass_tonnes: float
+    concrete_lining_mass_tonnes: float
+
+
+@dataclass(frozen=True)
+class LinedRockCavernDrainageDesign:
+    tunnel_drainage_length_m: float
+    cavern_drainage_length_per_cavern_m: float
+    number_caverns: int
+
+    total_cavern_drainage_length_m: float
+    total_drainage_length_m: float
 
 
 def construct_drilling_design(
@@ -183,7 +227,160 @@ def construct_porous_first_fill_process(
         first_gas_fill_duration_years=first_gas_fill_duration_years,
     )
 
+def construct_lined_rock_cavern_geometry(
+    required_effective_storage_volume_m3: float,
+    maximum_cavern_radius_m: float = 20.0,
+    cavern_height_m: float = 100.0,
+    effective_volume_fraction: float = 0.95,
+) -> LinedRockCavernGeometry:
+    """Construct LRC geometry from the required effective gas-storage volume.
 
+    The required volume should come from `inventory.required_storage_volume_m3`.
+    The radius and height define the maximum single-cavern module, not the
+    storage requirement itself.
+    """
+
+    _validate_positive(
+        required_effective_storage_volume_m3,
+        "required_effective_storage_volume_m3",
+    )
+    _validate_positive(maximum_cavern_radius_m, "maximum_cavern_radius_m")
+    _validate_positive(cavern_height_m, "cavern_height_m")
+    _validate_fraction(effective_volume_fraction, "effective_volume_fraction")
+
+    required_geometric_storage_volume_m3 = (
+        required_effective_storage_volume_m3 / effective_volume_fraction
+    )
+
+    maximum_single_cavern_geometric_volume_m3 = (
+        pi * maximum_cavern_radius_m**2 * cavern_height_m
+    )
+
+    number_caverns = ceil(
+        required_geometric_storage_volume_m3
+        / maximum_single_cavern_geometric_volume_m3
+    )
+
+    geometric_volume_per_cavern_m3 = (
+        required_geometric_storage_volume_m3 / number_caverns
+    )
+
+    effective_volume_per_cavern_m3 = (
+        geometric_volume_per_cavern_m3 * effective_volume_fraction
+    )
+
+    cavern_radius_m = sqrt(
+        geometric_volume_per_cavern_m3 / (pi * cavern_height_m)
+    )
+
+    inner_surface_area_per_cavern_m2 = (
+        2 * pi * cavern_radius_m * cavern_height_m
+        + 2 * pi * cavern_radius_m**2
+    )
+
+    total_inner_surface_area_m2 = (
+        inner_surface_area_per_cavern_m2 * number_caverns
+    )
+
+    return LinedRockCavernGeometry(
+        required_effective_storage_volume_m3=required_effective_storage_volume_m3,
+        effective_volume_fraction=effective_volume_fraction,
+        required_geometric_storage_volume_m3=required_geometric_storage_volume_m3,
+        maximum_cavern_radius_m=maximum_cavern_radius_m,
+        cavern_height_m=cavern_height_m,
+        maximum_single_cavern_geometric_volume_m3=(
+            maximum_single_cavern_geometric_volume_m3
+        ),
+        number_caverns=number_caverns,
+        geometric_volume_per_cavern_m3=geometric_volume_per_cavern_m3,
+        effective_volume_per_cavern_m3=effective_volume_per_cavern_m3,
+        cavern_radius_m=cavern_radius_m,
+        inner_surface_area_per_cavern_m2=inner_surface_area_per_cavern_m2,
+        total_inner_surface_area_m2=total_inner_surface_area_m2,
+    )
+
+
+def construct_lined_rock_cavern_lining_design(
+    geometry: LinedRockCavernGeometry,
+    steel_lining_thickness_m: float = 0.015,
+    concrete_lining_thickness_m: float = 0.5,
+    steel_density_kg_per_m3: float = 7850.0,
+    concrete_density_kg_per_m3: float = 2500.0,
+) -> LinedRockCavernLiningDesign:
+    """Construct LRC lining material quantities.
+
+    Huang estimates steel and concrete quantities from internal surface area
+    multiplied by lining thickness.
+    """
+
+    _validate_positive(steel_lining_thickness_m, "steel_lining_thickness_m")
+    _validate_positive(concrete_lining_thickness_m, "concrete_lining_thickness_m")
+    _validate_positive(steel_density_kg_per_m3, "steel_density_kg_per_m3")
+    _validate_positive(concrete_density_kg_per_m3, "concrete_density_kg_per_m3")
+
+    total_lined_surface_area_m2 = geometry.total_inner_surface_area_m2
+
+    steel_lining_volume_m3 = (
+        total_lined_surface_area_m2 * steel_lining_thickness_m
+    )
+
+    concrete_lining_volume_m3 = (
+        total_lined_surface_area_m2 * concrete_lining_thickness_m
+    )
+
+    steel_lining_mass_kg = steel_lining_volume_m3 * steel_density_kg_per_m3
+    concrete_lining_mass_kg = concrete_lining_volume_m3 * concrete_density_kg_per_m3
+
+    return LinedRockCavernLiningDesign(
+        steel_lining_thickness_m=steel_lining_thickness_m,
+        concrete_lining_thickness_m=concrete_lining_thickness_m,
+        steel_density_kg_per_m3=steel_density_kg_per_m3,
+        concrete_density_kg_per_m3=concrete_density_kg_per_m3,
+        total_lined_surface_area_m2=total_lined_surface_area_m2,
+        steel_lining_volume_m3=steel_lining_volume_m3,
+        concrete_lining_volume_m3=concrete_lining_volume_m3,
+        steel_lining_mass_kg=steel_lining_mass_kg,
+        concrete_lining_mass_kg=concrete_lining_mass_kg,
+        steel_lining_mass_tonnes=steel_lining_mass_kg / 1000,
+        concrete_lining_mass_tonnes=concrete_lining_mass_kg / 1000,
+    )
+
+
+def construct_lined_rock_cavern_drainage_design(
+    geometry: LinedRockCavernGeometry,
+    tunnel_drainage_length_m: float = 0.0,
+    cavern_drainage_length_per_cavern_m: float = 100.0,
+) -> LinedRockCavernDrainageDesign:
+    """Construct LRC drainage lengths.
+
+    Drainage cost can later be calculated as:
+    tunnel drainage length × tunnel drainage cost per metre
+    + cavern drainage length × cavern drainage cost per metre.
+    """
+
+    _validate_non_negative(tunnel_drainage_length_m, "tunnel_drainage_length_m")
+    _validate_non_negative(
+        cavern_drainage_length_per_cavern_m,
+        "cavern_drainage_length_per_cavern_m",
+    )
+
+    total_cavern_drainage_length_m = (
+        geometry.number_caverns * cavern_drainage_length_per_cavern_m
+    )
+
+    total_drainage_length_m = (
+        tunnel_drainage_length_m + total_cavern_drainage_length_m
+    )
+
+    return LinedRockCavernDrainageDesign(
+        tunnel_drainage_length_m=tunnel_drainage_length_m,
+        cavern_drainage_length_per_cavern_m=cavern_drainage_length_per_cavern_m,
+        number_caverns=geometry.number_caverns,
+        total_cavern_drainage_length_m=total_cavern_drainage_length_m,
+        total_drainage_length_m=total_drainage_length_m,
+    )
+
+    
 # VALIDATORS
 
 def _validate_positive(value: float, name: str) -> None:
@@ -199,3 +396,6 @@ def _validate_positive_int(value: int, name: str) -> None:
         raise ValueError(f"{name} must be positive.")
     
     
+def _validate_fraction(value: float, name: str) -> None:
+    if value <= 0 or value > 1:
+        raise ValueError(f"{name} must be in the interval (0, 1].")

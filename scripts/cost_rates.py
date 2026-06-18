@@ -7,6 +7,7 @@ from typing import Any
 from uhs_costs.design.aquifer import construct_project as construct_aquifer_project
 from uhs_costs.design.salt_cavern import construct_project as construct_salt_cavern_project
 from uhs_costs.design.depleted_gas_field import construct_project as construct_dgf_project
+from uhs_costs.design.lined_rock_cavern import construct_project as construct_lrc_project
 
 from uhs_costs.cost_model.aquifer import (
     calculate_cost_components as calculate_aquifer_cost_components,
@@ -16,6 +17,10 @@ from uhs_costs.cost_model.salt_cavern import (
 )
 from uhs_costs.cost_model.depleted_gas_field import (
     calculate_depleted_gas_field_cost_components,
+)
+
+from uhs_costs.cost_model.lined_rock_cavern import (
+    calculate_lined_rock_cavern_cost_components,
 )
 
 from uhs_costs.design.helpers.project import StorageProject
@@ -697,12 +702,24 @@ def main() -> None:
         salt_cavern_project
     )
 
-    projects = [salt_cavern_project, dgf_project, aquifer_project]
+    lrc_project = construct_lrc_project(
+        working_gas_capacity_kwh_lhv=33.33*600_000, 
+        withdrawal_flow_kw_h2_lhv=3_000_000,
+        injection_flow_kw_h2_lhv=1_500_000,
+        case_name="lined_rock_cavern",
+    )
+
+    lrc_cavern_cost_breakdown = calculate_lined_rock_cavern_cost_components(
+        lrc_project
+    )
+
+    projects = [salt_cavern_project, dgf_project, aquifer_project, lrc_project]
 
     cost_breakdowns_by_case = {
         salt_cavern_project.case_name: salt_cavern_cost_breakdown,
         dgf_project.case_name: dgf_cost_breakdown,
         aquifer_project.case_name: aquifer_cost_breakdown,
+        lrc_project.case_name: lrc_cavern_cost_breakdown
     }
 
     print_design_characteristics(projects)
