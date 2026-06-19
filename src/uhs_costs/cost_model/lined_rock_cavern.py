@@ -93,34 +93,64 @@ def calculate_lined_rock_cavern_cost_components(
     #
     # --------------------------------------------------------------------------------------------------------------
 
-    subsurface_epc4_obs_well_drilling = subsurface_capex.epc4_porous_observation_well_drilling_cost_eur(
-        number_observation_wells=project.wells.number_observation_wells,
-        last_cemented_casing_shoe_m=project.drilling.last_cemented_casing_shoe_m,
-        material_cost_factor_withdrawal=hystories_assumptions.material_cost_factor_withdrawal,
-        drilling_complexity_index=project.drilling.drilling_complexity_index
-    )
+    # subsurface_epc4_obs_well_drilling = subsurface_capex.epc4_porous_observation_well_drilling_cost_eur(
+    #     number_observation_wells=project.wells.number_observation_wells,
+    #     last_cemented_casing_shoe_m=project.drilling.last_cemented_casing_shoe_m,
+    #     material_cost_factor_withdrawal=hystories_assumptions.material_cost_factor_withdrawal,
+    #     drilling_complexity_index=project.drilling.drilling_complexity_index
+    # )
 
-    subsurface_epc4_prod_well_drilling = subsurface_capex.epc4_porous_production_well_drilling_cost_eur(
-        number_production_wells=project.wells.number_production_wells,
-        last_cemented_casing_shoe_m=project.drilling.last_cemented_casing_shoe_m,
-        material_cost_factor_withdrawal=hystories_assumptions.material_cost_factor_withdrawal,
-        drilling_complexity_index=project.drilling.drilling_complexity_index
-    )
+    # subsurface_epc4_prod_well_drilling = subsurface_capex.epc4_porous_production_well_drilling_cost_eur(
+    #     number_production_wells=project.wells.number_production_wells,
+    #     last_cemented_casing_shoe_m=project.drilling.last_cemented_casing_shoe_m,
+    #     material_cost_factor_withdrawal=hystories_assumptions.material_cost_factor_withdrawal,
+    #     drilling_complexity_index=project.drilling.drilling_complexity_index
+    # )
 
-    subsurface_ep4_drilling = subsurface_epc4_obs_well_drilling + subsurface_epc4_prod_well_drilling
+    # subsurface_ep4_drilling = subsurface_epc4_obs_well_drilling + subsurface_epc4_prod_well_drilling
+
+    # components.append(
+    #     CostComponent(
+    #         name="subsurface_ep4_drilling",
+    #         value_eur=subsurface_ep4_drilling,
+    #         cost_type=CostType.CAPEX,
+    #         hystories_group=HyStoriesGroup.SUBSURFACE,
+    #         cost_driver=CostDriver.STORAGE,
+    #         driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+    #         cost_unit=CostUnit.EUR_PER_KWH,
+    #         notes="HyStories EPC4 well drilling costs mapped to storage capacity",
+    #     )
+    # )
+
+    subsurface_lrc_wells = subsurface_capex.lrc_well_capex_eur(
+    number_well_heads=project.wells.number_well_heads,
+    well_depth_m=project.drilling.last_cemented_casing_shoe_m,
+    fixed_cost_eur_per_well=(
+        lrc_assumptions.lrc_well_fixed_cost_eur_per_well
+    ),
+    variable_cost_eur_per_m=(
+        lrc_assumptions.lrc_well_variable_cost_eur_per_m
+    ),
+    drilling_complexity_index=project.drilling.drilling_complexity_index,
+)
 
     components.append(
         CostComponent(
-            name="subsurface_ep4_drilling",
-            value_eur=subsurface_ep4_drilling,
+            name="subsurface_lrc_wells",
+            value_eur=subsurface_lrc_wells,
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
             driver_value=project.inventory.working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
-            notes="HyStories EPC4 well drilling costs mapped to storage capacity",
+            notes=(
+                "LRC well CAPEX based on Huang et al. Fixed and depth-variable "
+                "well costs are mapped to storage capacity."
+            ),
         )
     )
+
+    
 
     # ---------------------------------------------------------------------------------------------------------------
     #
@@ -363,7 +393,7 @@ def calculate_lined_rock_cavern_cost_components(
                 component.hystories_group == HyStoriesGroup.SUBSURFACE
                 and component.cost_type == CostType.CAPEX
                 and component.cost_driver == CostDriver.STORAGE
-                and component.name == "subsurface_ep4_drilling"
+                and component.name == "subsurface_lrc_wells"
             )
         )
 

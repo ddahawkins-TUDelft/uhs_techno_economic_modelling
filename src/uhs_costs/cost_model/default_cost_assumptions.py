@@ -19,7 +19,7 @@ class HyStoriesCostAssumptions:
 
     # Energy and commodity prices
     cost_of_electricity_eur_per_mwh: float = 60.0
-    hydrogen_cost_eur_per_kg: float = 2.0
+    hydrogen_cost_eur_per_kg: float = 4.12
 
     #OPEX
     surface_fixed_component_of_fixed_opex = 2100

@@ -114,7 +114,7 @@ class LinedRockCavernDesignAssumptions:
     concrete_density_kg_per_m3: float = 2500.0
 
     # Drainage design
-    tunnel_drainage_length_m: float = 0.0
+    tunnel_drainage_length_m: float = 760.0
     cavern_drainage_length_per_cavern_m: float = 100.0
 
 

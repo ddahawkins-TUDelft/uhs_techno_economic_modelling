@@ -677,7 +677,7 @@ def debug_print_cost_breakdown_fields(cost_breakdown: Any, max_items: int = 5) -
 
 def main() -> None:
     aquifer_project = construct_aquifer_project(
-        working_gas_capacity_kwh_lhv=700_000_000,
+        working_gas_capacity_kwh_lhv=1_800_000_000,
         withdrawal_flow_kw_h2_lhv=3_000_000,
         injection_flow_kw_h2_lhv=1_500_000,
         case_name="aquifer",
@@ -685,7 +685,7 @@ def main() -> None:
     aquifer_cost_breakdown = calculate_aquifer_cost_components(aquifer_project)
 
     dgf_project = construct_dgf_project(
-        working_gas_capacity_kwh_lhv=700_000_000,
+        working_gas_capacity_kwh_lhv=2_000_000_000,
         withdrawal_flow_kw_h2_lhv=3_000_000,
         injection_flow_kw_h2_lhv=1_500_000,
         case_name="depleted_gas_field",
@@ -693,7 +693,7 @@ def main() -> None:
     dgf_cost_breakdown = calculate_depleted_gas_field_cost_components(dgf_project)
 
     salt_cavern_project = construct_salt_cavern_project(
-        working_gas_capacity_kwh_lhv=700_000_000,
+        working_gas_capacity_kwh_lhv=800_000_000,
         withdrawal_flow_kw_h2_lhv=3_000_000,
         injection_flow_kw_h2_lhv=1_500_000,
         case_name="salt_cavern",
@@ -703,7 +703,7 @@ def main() -> None:
     )
 
     lrc_project = construct_lrc_project(
-        working_gas_capacity_kwh_lhv=33.33*600_000, 
+        working_gas_capacity_kwh_lhv=20_000_000, 
         withdrawal_flow_kw_h2_lhv=3_000_000,
         injection_flow_kw_h2_lhv=1_500_000,
         case_name="lined_rock_cavern",
