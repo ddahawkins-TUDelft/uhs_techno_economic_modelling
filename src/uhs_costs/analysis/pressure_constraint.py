@@ -350,7 +350,7 @@ def calculate_pressure_limited_flow_curves_for_projects(
 
         df = add_capacity_normalised_columns(
             df=df,
-            working_gas_capacity_kwh_lhv=project.inventory.working_gas_capacity_kwh_lhv,
+            working_gas_capacity_kwh_lhv=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
         )
 
         results_by_project[label] = df
@@ -470,12 +470,12 @@ def plot_curves(
             else:
                 continue
 
-            ax.axhline(
-                design_capacity_kw * y_scale,
-                linestyle="--",
-                label=design_label,
-                color=(design_capacity_colors or {}).get(label),
-            )
+            # ax.axhline(
+            #     design_capacity_kw * y_scale,
+            #     linestyle="--",
+            #     label=design_label,
+            #     color=(design_capacity_colors or {}).get(label),
+            # )
 
     ax.set_xlabel(xlabel or x)
     ax.set_ylabel(ylabel or y)
@@ -882,7 +882,6 @@ def print_cem_soc_endpoint_constraints(
     print("=" * 88)
     print()
 
-
 def plot_soc_endpoint_bounds(
     results: pd.DataFrame | Mapping[str, pd.DataFrame],
     *,
@@ -890,23 +889,22 @@ def plot_soc_endpoint_bounds(
     title: str | None = None,
     xlabel: str | None = None,
     ylabel: str | None = None,
-    show_linear_fit: bool = True,
+    show_linear_fit: bool = False,
     conservative_fit: bool = True,
-    line_colors: Mapping[str, str] | Sequence[str] | None = None,
-    min_color: str | None = None,
-    max_color: str | None = None,
-    min_fit_color: str | None = None,
-    max_fit_color: str | None = None,
     output_path: str | Path | None = None,
     show: bool = True,
 ) -> None:
     """
     Plot calculated minimum and maximum admissible future SoC endpoints.
 
-    The solid lines show the calculated values at each sampled pressure/current
-    SoC. If show_linear_fit=True, dashed lines show the linearised lower and
-    upper endpoint constraints fitted across all supplied projects.
+    This version is formatted for the main-text figure:
+    - plasma-based colours
+    - no linearised fit by default
+    - no title by default
+    - faint grey y=x reference line
+    - LaTeX-friendly axis labels
     """
+
     if isinstance(results, pd.DataFrame):
         labelled_results = {"case": results}
     else:
@@ -924,36 +922,44 @@ def plot_soc_endpoint_bounds(
                 f"Available columns: {list(df.columns)}"
             )
 
-    if isinstance(line_colors, Mapping):
-        colour_lookup = dict(line_colors)
-    elif line_colors is not None:
-        colour_lookup = {
-            label: colour
-            for label, colour in zip(labelled_results.keys(), line_colors)
-        }
-    else:
-        colour_lookup = {}
+    # Plasma-based colours
+    cmap = plt.cm.plasma
+    lower_color = cmap(0.20)
+    upper_color = cmap(0.80)
 
     fig, ax = plt.subplots(figsize=(8, 5))
 
     for label, df in labelled_results.items():
-        project_color = colour_lookup.get(label)
-        lower_color = min_color or project_color
-        upper_color = max_color or project_color
+        x_vals = df[x].to_numpy()
+        y_min = df["soc_t_plus_24_min"].to_numpy()
+        y_max = df["soc_t_plus_24_max"].to_numpy()
+
+        # Faint feasible band between lower and upper bounds
+        ax.fill_between(
+            x_vals,
+            y_min,
+            y_max,
+            color=cmap(0.55),
+            alpha=0.12,
+            linewidth=0,
+        )
 
         ax.plot(
-            df[x],
-            df["soc_t_plus_24_min"],
-            label=f"{label} minimum $SoC_{{t+24}}$",
+            x_vals,
+            y_min,
             color=lower_color,
+            linewidth=2.0,
+            label=r"Lower bound",
         )
         ax.plot(
-            df[x],
-            df["soc_t_plus_24_max"],
-            label=f"{label} maximum $SoC_{{t+24}}$",
+            x_vals,
+            y_max,
             color=upper_color,
+            linewidth=2.0,
+            label=r"Upper bound",
         )
 
+    # Optional linear fit, off by default
     if show_linear_fit:
         x_fit = np.linspace(0.0, 1.0, 200)
         lower_intercept, lower_slope = fit_linear_soc_endpoint_bound(
@@ -975,31 +981,53 @@ def plot_soc_endpoint_bounds(
             x_fit,
             lower_intercept + lower_slope * x_fit,
             linestyle="--",
-            color=min_fit_color or min_color,
-            label="Linearised minimum $SoC_{t+24}$",
+            color=lower_color,
+            alpha=0.8,
+            label=r"Linearised lower bound",
         )
         ax.plot(
             x_fit,
             upper_intercept + upper_slope * x_fit,
             linestyle="--",
-            color=max_fit_color or max_color,
-            label="Linearised maximum $SoC_{t+24}$",
+            color=upper_color,
+            alpha=0.8,
+            label=r"Linearised upper bound",
         )
 
-    ax.set_xlabel(xlabel or x)
-    ax.set_ylabel(ylabel or "Admissible state of charge 24 hours later [-]")
+    # Faint constant-inventory line: y = x
+    x_ref = np.linspace(0.0, 1.0, 200)
+    ax.plot(
+        x_ref,
+        x_ref,
+        linestyle="--",
+        color="0.65",
+        linewidth=1.0,
+        alpha=0.8,
+        label=r"$E_{s,t+\Delta t^{24}} = E_{s,t}$",
+        zorder=0,
+    )
+
+    ax.set_xlim(0.0, 1.0)
+    ax.set_ylim(0.0, 1.0)
+
+    ax.set_xlabel(
+        xlabel or r"$E_{s,t} / \bar{E}_{s}\;[-]$"
+    )
+    ax.set_ylabel(
+        ylabel or r"$E_{s,t+\Delta t^{24}} / \bar{E}_{s}\;[-]$"
+    )
 
     if title is not None:
         ax.set_title(title)
 
-    ax.legend()
+    ax.legend(frameon=False)
     ax.grid(True, alpha=0.3)
     fig.tight_layout()
 
     if output_path is not None:
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(output_path, dpi=300)
+        fig.savefig(output_path, dpi=300, bbox_inches="tight")
 
     if show:
         plt.show()
@@ -1158,3 +1186,156 @@ def print_cem_pressure_constraint(
     print()
     print("=" * 88)
     print()
+
+def summarise_soc_endpoint_coefficients(
+    results_by_project: Mapping[str, pd.DataFrame],
+    *,
+    # case_metadata: Mapping[str, Mapping[str, float | str]] | None = None,
+    x: str = "soc",
+    conservative: bool = True,
+    output_csv_path: str | Path | None = None,
+) -> pd.DataFrame:
+    """
+    Fit CEM-ready 24-hour endpoint SoC constraints for each case separately.
+
+    The fitted constraints are:
+
+        E_{s,t+Delta t24} >= a_min * Ebar_s + b_min * E_{s,t}
+        E_{s,t+Delta t24} <= a_max * Ebar_s + b_max * E_{s,t}
+
+    The returned dataframe also reports the implied admissible 24-hour
+    withdrawal and injection at e_{s,t}=0.5.
+    """
+
+    if not results_by_project:
+        raise ValueError("No results provided.")
+
+    rows: list[dict[str, float | str]] = []
+
+    for label, df in results_by_project.items():
+        one_case = {label: df}
+
+        a_min, b_min = fit_linear_soc_endpoint_bound(
+            results_by_project=one_case,
+            y="soc_t_plus_24_min",
+            x=x,
+            bound="lower",
+            conservative=conservative,
+        )
+
+        a_max, b_max = fit_linear_soc_endpoint_bound(
+            results_by_project=one_case,
+            y="soc_t_plus_24_max",
+            x=x,
+            bound="upper",
+            conservative=conservative,
+        )
+
+        e_mid = 0.5
+        e_min_mid = a_min + b_min * e_mid
+        e_max_mid = a_max + b_max * e_mid
+
+        # Positive values for readability:
+        # withdrawal = how far below current SoC the lower bound is
+        # injection = how far above current SoC the upper bound is
+        withdrawal_at_mid = e_mid - e_min_mid
+        injection_at_mid = e_max_mid - e_mid
+
+
+
+        row = {
+            "case": label,
+            "a_min": a_min,
+            "b_min": b_min,
+            "a_max": a_max,
+            "b_max": b_max,
+            "withdrawal_at_e_0_5": withdrawal_at_mid,
+            "injection_at_e_0_5": injection_at_mid,
+        }
+
+        rows.append(row)
+
+    summary = pd.DataFrame(rows)
+
+    if output_csv_path is not None:
+        output_csv_path = Path(output_csv_path)
+        output_csv_path.parent.mkdir(parents=True, exist_ok=True)
+        summary.to_csv(output_csv_path, index=False)
+
+    return summary
+
+def run_pressure_ramp_limit_sensitivity(
+    *,
+    default_project: StorageProject,
+    output_dir: Path,
+) -> pd.DataFrame:
+    """
+    Run pressure-change-limit sensitivity for the default salt cavern design only.
+
+    The cavern design is fixed at the default pressure range, while the allowable
+    daily pressure-change limit is varied.
+    """
+
+    ramp_limit_cases = {
+        "Low ramp limit: 5 bar/day": 5e5,
+        "Default: 10 bar/day": 10e5,
+        "High ramp limit: 15 bar/day": 15e5,
+    }
+
+    ramp_results: dict[str, pd.DataFrame] = {}
+    ramp_projects: dict[str, StorageProject] = {}
+
+    for case_label, pressure_change_limit_pa_per_day in ramp_limit_cases.items():
+        case_results = calculate_pressure_limited_flow_curves_for_projects(
+            projects={case_label: default_project},
+            pressure_step_pa=1e5,
+            pressure_change_limit_pa_per_day=pressure_change_limit_pa_per_day,
+            print_cem_constraints=False,
+        )
+
+        ramp_results[case_label] = case_results[case_label]
+        ramp_projects[case_label] = default_project
+
+    ramp_output_dir = output_dir / "ramp_limit_sensitivity"
+    ramp_output_dir.mkdir(parents=True, exist_ok=True)
+
+    save_results(
+        results_by_project=ramp_results,
+        output_dir=ramp_output_dir,
+    )
+
+    ramp_colours = {
+        "Low ramp limit: 5 bar/day": (13 / 255, 8 / 255, 135 / 255),
+        "Default ramp limit: 10 bar/day": (204 / 255, 71 / 255, 120 / 255),
+        "High ramp limit: 15 bar/day": (240 / 255, 249 / 255, 33 / 255),
+    }
+
+    plot_curves(
+        results=ramp_results,
+        projects=ramp_projects,
+        show_design_capacity=True,
+        x="soc",
+        y="withdrawal_kw_lhv",
+        y_scale=1 / 1e6,
+        xlabel="State of charge [-]",
+        ylabel="Average 24-hour withdrawal capacity [GW LHV]",
+        title="Pressure-change-limit sensitivity",
+        line_colors=ramp_colours,
+        output_path=ramp_output_dir / "withdrawal_capacity_by_soc_ramp_limit.png",
+    )
+
+    ramp_limit_coefficients = summarise_soc_endpoint_coefficients(
+        results_by_project=ramp_results,
+        conservative=True,
+        output_csv_path=ramp_output_dir / "ramp_limit_endpoint_coefficients.csv",
+    )
+
+    print("\nPressure-change-limit sensitivity coefficients")
+    print(
+        ramp_limit_coefficients.to_string(
+            index=False,
+            float_format=lambda x: f"{x:.6f}",
+        )
+    )
+
+    return ramp_limit_coefficients

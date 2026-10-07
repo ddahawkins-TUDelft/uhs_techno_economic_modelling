@@ -116,7 +116,7 @@ def calculate_lined_rock_cavern_cost_components(
     #         cost_type=CostType.CAPEX,
     #         hystories_group=HyStoriesGroup.SUBSURFACE,
     #         cost_driver=CostDriver.STORAGE,
-    #         driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+    #         driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
     #         cost_unit=CostUnit.EUR_PER_KWH,
     #         notes="HyStories EPC4 well drilling costs mapped to storage capacity",
     #     )
@@ -141,7 +141,7 @@ def calculate_lined_rock_cavern_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes=(
                 "LRC well CAPEX based on Huang et al. Fixed and depth-variable "
@@ -170,7 +170,7 @@ def calculate_lined_rock_cavern_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes=(
                 "LRC excavation/mining CAPEX. Uses the geometric storage "
@@ -206,7 +206,7 @@ def calculate_lined_rock_cavern_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes=(
                 "LRC drainage CAPEX for tunnel drainage and cavern drainage."
@@ -241,7 +241,7 @@ def calculate_lined_rock_cavern_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes=(
                 "LRC steel and concrete lining CAPEX, including the Huang "
@@ -271,7 +271,7 @@ def calculate_lined_rock_cavern_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes=(
                 "HyStories EPC3 first gas fill cost adapted for LRC commissioning. "
@@ -299,7 +299,7 @@ def calculate_lined_rock_cavern_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes=(
                 "Recoverable cushion gas investment, calculated from the "
@@ -334,7 +334,7 @@ def calculate_lined_rock_cavern_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes=(
                 "Subsurface contingency applied to LRC storage-linked CAPEX."
@@ -371,7 +371,7 @@ def calculate_lined_rock_cavern_cost_components(
             cost_type=CostType.ABEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes=(
                 "Subsurface ABEX applied to LRC subsurface CAPEX, excluding "
@@ -409,7 +409,7 @@ def calculate_lined_rock_cavern_cost_components(
             cost_type=CostType.FIXED_OPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH_YEAR,
             notes=(
                 "Annual LRC well OPEX, calculated as a fixed fraction of "

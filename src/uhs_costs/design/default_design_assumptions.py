@@ -41,6 +41,9 @@ class GeneralDesignAssumptions:
     compression_method: CompressionMethod = CompressionMethod.HGSM_POLYTROPIC
     compressor_availability_factor: float = 0.9 #source=https://doi.org/10.1002/ente.202500552
 
+    # recovery factor
+    recovery_factor: float = 1
+
 
 @dataclass(frozen=True)
 class SaltCavernDesignAssumptions:
@@ -192,23 +195,27 @@ def construct_general_design_assumptions(
         assumptions = GeneralDesignAssumptions(
             purification_factor=0.0,
             reference_reservoir_depth_m=1_000.0,
+            recovery_factor=0.9983
         )
 
     elif storage_technology == StorageTechnology.LINED_ROCK_CAVERN:
         assumptions = GeneralDesignAssumptions(
             purification_factor=0.0,
             reference_reservoir_depth_m=150.0,
+            recovery_factor=1
         )
 
     elif storage_technology ==  StorageTechnology.DEPLETED_GAS_FIELD:
         assumptions = GeneralDesignAssumptions(
             purification_factor=1.5,
             reference_reservoir_depth_m=1_200.0,
+            recovery_factor=0.8
         )
     elif storage_technology == StorageTechnology.AQUIFER:
         assumptions = GeneralDesignAssumptions(
             purification_factor=1.5,
             reference_reservoir_depth_m=1_300.0,
+            recovery_factor=0.9
         )
 
     else:

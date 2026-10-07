@@ -336,7 +336,7 @@ def _get_working_h2_inventory_mol(
     working_gas_capacity_kwh = _get_first_attr(
         project.inventory,
         (
-            "working_gas_capacity_kwh_lhv",
+            "recoverable_working_gas_capacity_kwh_lhv",
             "working_gas_capacity_kwh",
             "working_gas_kwh_lhv",
         ),

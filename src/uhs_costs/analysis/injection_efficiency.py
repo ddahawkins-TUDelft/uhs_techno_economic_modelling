@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping, Any
+from matplotlib.lines import Line2D
+
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -460,7 +462,6 @@ def save_injection_efficiency_results(
 
     return combined, summary
 
-
 def plot_injection_efficiency_curve(
     results: pd.DataFrame | Mapping[str, pd.DataFrame],
     *,
@@ -474,9 +475,12 @@ def plot_injection_efficiency_curve(
     Plot injection efficiency against SoC.
 
     For each project, the plot highlights:
-    - minimum efficiency
-    - mean efficiency across the curve
+    - efficiency curve
     - efficiency at SoC = 50%
+
+    Curves are coloured dynamically using the plasma colormap.
+    The SoC = 50% markers use the same colour as their corresponding curve,
+    but are represented by a single grey proxy marker in the legend.
     """
     if isinstance(results, pd.DataFrame):
         labelled_results = {"case": results}
@@ -488,7 +492,19 @@ def plot_injection_efficiency_curve(
 
     fig, ax = plt.subplots(figsize=(8, 5))
 
-    for label, df in labelled_results.items():
+    n_cases = len(labelled_results)
+    cmap = plt.get_cmap("plasma")
+
+    if n_cases == 1:
+        colour_values = [0.5]
+    else:
+        colour_values = np.linspace(0.12, 0.88, n_cases)
+
+    line_handles = []
+
+    for (label, df), colour_value in zip(labelled_results.items(), colour_values):
+        colour = cmap(colour_value)
+
         if "soc" not in df.columns:
             raise ValueError(f"Column 'soc' not found for {label!r}.")
 
@@ -505,44 +521,47 @@ def plot_injection_efficiency_curve(
             project_label=label,
         )
 
-        min_idx = int(np.argmin(efficiency))
-        soc_min_eff = soc[min_idx]
-        min_eff = efficiency[min_idx]
-
         eff_50 = summary.efficiency_at_soc_50
-        mean_eff = summary.mean_efficiency
 
-        ax.plot(
+        line, = ax.plot(
             soc,
             efficiency,
-            label=f"{label} efficiency curve",
+            color=colour,
+            label=label,
         )
-
-        ax.scatter(
-            [soc_min_eff],
-            [min_eff],
-            marker="o",
-            label=f"{label} min: {min_eff:.4f}",
-        )
+        line_handles.append(line)
 
         ax.scatter(
             [0.5],
             [eff_50],
             marker="x",
-            label=f"{label} SoC 50%: {eff_50:.4f}",
+            color=colour,
+            s=55,
+            linewidths=1.8,
+            label="_nolegend_",
+            zorder=3,
         )
 
-        ax.axhline(
-            mean_eff,
-            linestyle="--",
-            label=f"{label} mean: {mean_eff:.4f}",
-        )
+    soc_50_handle = Line2D(
+        [0],
+        [0],
+        marker="x",
+        linestyle="None",
+        color="0.45",
+        markersize=7,
+        markeredgewidth=1.8,
+        label="Efficiency when SoC = 50%",
+    )
 
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title(title)
     ax.grid(True, alpha=0.3)
-    ax.legend()
+
+    ax.legend(
+        handles=[*line_handles, soc_50_handle],
+        frameon=True,
+    )
 
     fig.tight_layout()
 
@@ -555,7 +574,6 @@ def plot_injection_efficiency_curve(
         plt.show()
     else:
         plt.close(fig)
-
 
 def plot_compression_intensity_curve(
     results: pd.DataFrame | Mapping[str, pd.DataFrame],

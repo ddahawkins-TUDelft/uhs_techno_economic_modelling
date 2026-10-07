@@ -1,8 +1,11 @@
 from pathlib import Path
 
-from uhs_costs.design.salt_cavern import (
-    construct_project as construct_salt_cavern_project,
-)
+from uhs_costs.design.salt_cavern import construct_project as construct_salt_cavern_project
+from uhs_costs.design.lined_rock_cavern import construct_project as construct_lrc_project
+from uhs_costs.design.depleted_gas_field import construct_project as construct_dgf_project
+from uhs_costs.design.aquifer import construct_project as construct_aquifer_project
+
+
 from uhs_costs.design.helpers.project import StorageProject
 
 from uhs_costs.analysis.injection_efficiency import (
@@ -14,11 +17,32 @@ from uhs_costs.analysis.injection_efficiency import (
 
 
 def main() -> None:
-    salt_cavern_project_700 = construct_salt_cavern_project(
-        working_gas_capacity_kwh_lhv=700_000_000,
-        withdrawal_flow_kw_h2_lhv=3_000_000,
-        injection_flow_kw_h2_lhv=1_500_000,
-        case_name="salt_cavern_700GWh",
+    salt_cavern_project = construct_salt_cavern_project(
+        working_gas_capacity_kwh_lhv=800_000_000,
+        withdrawal_flow_kw_h2_lhv=800_000_000/(24*12),
+        injection_flow_kw_h2_lhv=800_000_000/(24*12)/2,
+        case_name="salt_cavern",
+    )
+
+    lrc_project = construct_lrc_project(
+        working_gas_capacity_kwh_lhv=20_000_000, 
+        withdrawal_flow_kw_h2_lhv=20_000_000/(24*7),
+        injection_flow_kw_h2_lhv=20_000_000/(24*7)/2,
+        case_name="lined_rock_cavern",
+    )
+
+    dgf_project = construct_dgf_project(
+        working_gas_capacity_kwh_lhv=2_000_000_000,
+        withdrawal_flow_kw_h2_lhv=2_000_000_000/(24*60),
+        injection_flow_kw_h2_lhv=2_000_000_000/(24*60)/2,
+        case_name="depleted_gas_field",
+    )
+
+    aquifer_project = construct_aquifer_project(
+        working_gas_capacity_kwh_lhv=1_800_000_000,
+        withdrawal_flow_kw_h2_lhv=1_800_000_000/(24*60),
+        injection_flow_kw_h2_lhv=1_800_000_000/(24*60)/2,
+        case_name="aquifer",
     )
 
     # salt_cavern_project_1000 = construct_salt_cavern_project(
@@ -29,8 +53,11 @@ def main() -> None:
     # )
 
     projects: dict[str, StorageProject] = {
-        "700GWh": salt_cavern_project_700,
-        # "1TWh": salt_cavern_project_1000,
+        "salt_cavern": salt_cavern_project,
+        "dgf": dgf_project,
+        "lrc": lrc_project,
+        "aquifer": aquifer_project,
+
     }
 
     if not projects:

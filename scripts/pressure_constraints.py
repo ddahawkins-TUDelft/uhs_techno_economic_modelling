@@ -5,6 +5,8 @@ from uhs_costs.analysis.pressure_constraint import (
     plot_soc_change_bounds,
     plot_soc_endpoint_bounds,
     save_results,
+    summarise_soc_endpoint_coefficients,
+    run_pressure_ramp_limit_sensitivity
 )
 from uhs_costs.design.helpers.project import StorageProject, StorageTechnology
 
@@ -14,6 +16,8 @@ from uhs_costs.design.default_design_assumptions import HyStoriesDesignAssumptio
 from pathlib import Path
 
 
+
+
 # =============================================================================
 # Main
 # =============================================================================
@@ -21,57 +25,100 @@ from pathlib import Path
 
 def main() -> None:
 
-    salt_cavern_project_700 = construct_salt_cavern_project(
-        working_gas_capacity_kwh_lhv=700_000_000,
-        withdrawal_flow_kw_h2_lhv=3_000_000,
-        injection_flow_kw_h2_lhv=1_500_000,
-        case_name="90_to_240_bar",
+    salt_cavern_project = construct_salt_cavern_project(
+        working_gas_capacity_kwh_lhv=800_000_000,
+        withdrawal_flow_kw_h2_lhv=800_000_000/(24*12),
+        injection_flow_kw_h2_lhv=800_000_000/(24*12)/2,
+        case_name="salt_cavern",
     )
 
     low_pressure_range_assumptions =  construct_hystories_design_assumptions(
         storage_technology=StorageTechnology.SALT_CAVERN,
         general_overrides={
             'reference_reservoir_depth_m': 1000,
-            'minimum_operating_pressure_pa': 12.0e6,
-            'maximum_operating_pressure_pa': 20e6,
+            'minimum_operating_pressure_pa': 7.0e6,
+            'maximum_operating_pressure_pa': 22e6,
             'abandonment_pressure_pa': 0,
         }
     )
 
     salt_cavern_project_low_pressure = construct_salt_cavern_project(
-        working_gas_capacity_kwh_lhv=1_000_000_000,
-        withdrawal_flow_kw_h2_lhv=3_000_000,
-        injection_flow_kw_h2_lhv=1_500_000,
-        assumptions=low_pressure_range_assumptions,
-        case_name="120_to_200_bar",
+        working_gas_capacity_kwh_lhv=800_000_000,
+        withdrawal_flow_kw_h2_lhv=800_000_000/(24*12),
+        injection_flow_kw_h2_lhv=800_000_000/(24*12)/2,
+        case_name="salt_cavern",
+        assumptions=low_pressure_range_assumptions
     )
 
     high_pressure_range_assumptions =  construct_hystories_design_assumptions(
         storage_technology=StorageTechnology.SALT_CAVERN,
         general_overrides={
             'reference_reservoir_depth_m': 1000,
-            'minimum_operating_pressure_pa': 6.0e6,
-            'maximum_operating_pressure_pa': 25e6,
+            'minimum_operating_pressure_pa': 11e6,
+            'maximum_operating_pressure_pa': 26e6,
             'abandonment_pressure_pa': 0,
         }
     )
 
     salt_cavern_project_high_pressure = construct_salt_cavern_project(
-        working_gas_capacity_kwh_lhv=1_000_000_000,
-        withdrawal_flow_kw_h2_lhv=3_000_000,
-        injection_flow_kw_h2_lhv=1_500_000,
-        assumptions=high_pressure_range_assumptions,
-        case_name="60_to_250_bar",
+        working_gas_capacity_kwh_lhv=800_000_000,
+        withdrawal_flow_kw_h2_lhv=800_000_000/(24*12),
+        injection_flow_kw_h2_lhv=800_000_000/(24*12)/2,
+        case_name="salt_cavern",
+        assumptions=high_pressure_range_assumptions
+    )
+
+    narrow_pressure_range_assumptions =  construct_hystories_design_assumptions(
+        storage_technology=StorageTechnology.SALT_CAVERN,
+        general_overrides={
+            'reference_reservoir_depth_m': 1000,
+            'minimum_operating_pressure_pa': 11e6,
+            'maximum_operating_pressure_pa': 22e6,
+            'abandonment_pressure_pa': 0,
+        }
+    )
+
+    salt_cavern_project_narrow_pressure = construct_salt_cavern_project(
+        working_gas_capacity_kwh_lhv=800_000_000,
+        withdrawal_flow_kw_h2_lhv=800_000_000/(24*12),
+        injection_flow_kw_h2_lhv=800_000_000/(24*12)/2,
+        case_name="salt_cavern",
+        assumptions=narrow_pressure_range_assumptions
+    )
+
+    wide_pressure_range_assumptions =  construct_hystories_design_assumptions(
+        storage_technology=StorageTechnology.SALT_CAVERN,
+        general_overrides={
+            'reference_reservoir_depth_m': 1000,
+            'minimum_operating_pressure_pa': 7e6,
+            'maximum_operating_pressure_pa': 26e6,
+            'abandonment_pressure_pa': 0,
+        }
+    )
+
+    salt_cavern_project_wide_pressure = construct_salt_cavern_project(
+        working_gas_capacity_kwh_lhv=800_000_000,
+        withdrawal_flow_kw_h2_lhv=800_000_000/(24*12),
+        injection_flow_kw_h2_lhv=800_000_000/(24*12)/2,
+        case_name="salt_cavern",
+        assumptions=wide_pressure_range_assumptions
     )
 
     output_dir = Path("outputs/pressure_constraints")
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    ramp_limit_coefficients = run_pressure_ramp_limit_sensitivity(
+        default_project=salt_cavern_project,
+        output_dir=output_dir,
+    )
+
 
     projects: dict[str, StorageProject] = {
-        "90_to_240_bar": salt_cavern_project_700,
-        "120_to_200_bar": salt_cavern_project_low_pressure,
-        "60_to_250_bar": salt_cavern_project_high_pressure,
+        "Default:90-240bar": salt_cavern_project,
+        "Low:70-220bar": salt_cavern_project_low_pressure,
+        "High:110-260bar": salt_cavern_project_high_pressure,
+        "Narrow:110-220bar": salt_cavern_project_narrow_pressure,
+        "Wide:70-260bar": salt_cavern_project_wide_pressure,
     }
 
     if not projects:
@@ -83,20 +130,25 @@ def main() -> None:
     # Optional plotting colours. Matplotlib colour names, hex codes, or RGB tuples
     # are all supported.
     project_colours = {
-        "90_to_240_bar": (13/255, 8/255, 135/255),
-        "120_to_200_bar": (204/255, 71/255, 120/255),
-        "60_to_250_bar": (248/255, 149/255, 64/255),
+        "Default:90-240bar": (13/255, 8/255, 135/255),
+        "Low:70-220bar": (126/255, 3/255, 168/255),
+        "High:110-260bar": (204/255, 71/255, 120/255),
+        "Narrow:110-220bar": (248/255, 149/255, 64/255),
+        "Wide:70-260bar": (240/255, 249/255, 33/255),
     }
     bound_colours = {
         "min": "tab:red",
         "max": "tab:green",
     }
 
+
     results_by_project = calculate_pressure_limited_flow_curves_for_projects(
         projects=projects,
         pressure_step_pa=1e5,                 
         pressure_change_limit_pa_per_day=10e5, 
     )
+
+
 
     save_results(
         results_by_project=results_by_project,
@@ -155,18 +207,12 @@ def main() -> None:
     )
 
     plot_soc_endpoint_bounds(
-        results=results_by_project,
-        x="soc",
-        xlabel="State of charge at time t [-]",
-        ylabel="Admissible state of charge at t+24 [-]",
-        title="Pressure-constrained future SoC bounds",
-        min_color=bound_colours["min"],
-        max_color=bound_colours["max"],
-        min_fit_color=bound_colours["min"],
-        max_fit_color=bound_colours["max"],
-        output_path=output_dir / "soc_endpoint_bounds_by_soc.png",
+        results={"default": results_by_project["Default:90-240bar"]},
+        show_linear_fit=False,
+        title=None,
+        output_path=output_dir / "pressure_constraint_future_soc_default.png",
+        show=True,
     )
-
     plot_curves(
         results=results_by_project,
         projects=projects,
@@ -192,6 +238,14 @@ def main() -> None:
         line_colors=project_colours,
         output_path=output_dir / "inventory_by_pressure.png",
     )
+
+    pressure_range_coefficients = summarise_soc_endpoint_coefficients(
+        results_by_project=results_by_project,
+        conservative=True,
+        output_csv_path="outputs/pressure_range_endpoint_coefficients.csv",
+    )
+
+    print(pressure_range_coefficients)
 
 
 

@@ -70,7 +70,7 @@ def calculate_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes="HyStories EPC3 first fill operational costs as investment capex mapped to storage capacity",
         )
@@ -105,7 +105,7 @@ def calculate_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes="HyStories EPC4 well drilling costs mapped to storage capacity",
         )
@@ -130,7 +130,7 @@ def calculate_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes="HyStories cushion gas costs mapped to storage capacity",
         )
@@ -163,7 +163,7 @@ def calculate_cost_components(
             cost_type=CostType.CAPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes="HyStories subsurface_contingencies mapped to storage capacity",
         )
@@ -199,7 +199,7 @@ def calculate_cost_components(
             cost_type=CostType.ABEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH,
             notes="HyStories subsurface ABEX (which excludes cushion gas) mapped to storage capacity",
         )
@@ -237,7 +237,7 @@ def calculate_cost_components(
             cost_type=CostType.FIXED_OPEX,
             hystories_group=HyStoriesGroup.SUBSURFACE,
             cost_driver=CostDriver.STORAGE,
-            driver_value=project.inventory.working_gas_capacity_kwh_lhv,
+            driver_value=project.inventory.recoverable_working_gas_capacity_kwh_lhv,
             cost_unit=CostUnit.EUR_PER_KWH_YEAR,
             notes="HyStories subsurface fixed opex of wells mapped to storage capacity, euro/kWh/year",
         )

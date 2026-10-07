@@ -71,6 +71,7 @@ def construct_project(
         maximum_pressure_pa=assumptions.general.maximum_operating_pressure_pa,
         minimum_pressure_pa=assumptions.general.minimum_operating_pressure_pa,
         abandonment_pressure_pa=assumptions.general.abandonment_pressure_pa,
+        recovery_factor=assumptions.general.recovery_factor
     )
 
     #construct StorageFlows
