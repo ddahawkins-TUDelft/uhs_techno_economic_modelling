@@ -214,14 +214,14 @@ def construct_general_design_assumptions(
     elif storage_technology ==  StorageTechnology.DEPLETED_GAS_FIELD:
         assumptions = GeneralDesignAssumptions(
             purification_factor=1.5,
-            purification_hydrogen_recovery=0.90,
+            purification_hydrogen_recovery=0.8996,
             reference_reservoir_depth_m=1_200.0,
             recovery_factor=0.8
         )
     elif storage_technology == StorageTechnology.AQUIFER:
         assumptions = GeneralDesignAssumptions(
             purification_factor=1.5,
-            purification_hydrogen_recovery=1.0,
+            purification_hydrogen_recovery=0.8996,
             reference_reservoir_depth_m=1_300.0,
             recovery_factor=0.9
         )
