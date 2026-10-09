@@ -96,10 +96,10 @@ def epc3_well_interconnection_cost_eur(
     withdrawal_flow_million_sm3_per_day: float,
     operating_pressure_ratio: float,
     material_cost_factor_withdrawal: float,
-    filled_lines_length_km: float,
+    additional_field_line_length_km: float,
 ) -> float:
     """Original HyStories EPC3 cost for well interconnection."""
-    return 117*filled_lines_length_km*(1+0.743*material_cost_factor_withdrawal)*(operating_pressure_ratio*withdrawal_flow_million_sm3_per_day+1.9)*1000
+    return 117*additional_field_line_length_km*(1+0.743*material_cost_factor_withdrawal)*(operating_pressure_ratio*withdrawal_flow_million_sm3_per_day+1.9)*1000
 
 #----------------------------------------------------------------------------------------------------
 # 

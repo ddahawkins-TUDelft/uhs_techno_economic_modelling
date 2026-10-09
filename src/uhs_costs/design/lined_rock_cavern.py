@@ -152,8 +152,9 @@ def construct_project(
 
     #construct FieldInterconnectionDesign
     field_interconnection = construct_field_interconnection_design(
-        field_line_length_per_well_head_km=assumptions.general.field_line_length_per_well_head_km,
-        field_line_length_km=assumptions.general.field_line_length_per_well_head_km*wells.number_well_heads,
+        gas_plant_to_nearest_wellhead_distance_km=(
+            assumptions.general.gas_plant_to_nearest_wellhead_distance_km
+        ),
     )
 
     #construct CompressionResult

@@ -161,7 +161,7 @@ def calculate_surface_cost_components(
         withdrawal_flow_million_sm3_per_day=gross_withdrawal_flow_million_sm3_per_day,
         operating_pressure_ratio=project.pressures.operating_pressure_ratio,
         material_cost_factor_withdrawal=assumptions.material_cost_factor_withdrawal,
-        filled_lines_length_km=project.field_interconnection.field_line_length_km
+        additional_field_line_length_km=project.field_interconnection.additional_field_line_length_km,
     )
 
     components.append(

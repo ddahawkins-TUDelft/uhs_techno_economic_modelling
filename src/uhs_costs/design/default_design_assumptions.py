@@ -28,8 +28,12 @@ class GeneralDesignAssumptions:
     pipeline_pressure_pa: float = 4.0e6
 
     # Wells / field lines
-    field_line_length_per_well_head_km: float = 0.5
     drilling_complexity_index: float = 1.0
+
+    # Surface interconnection
+    # HyStories assumes the gas plant is 500 m from the nearest wellhead.
+    # EPC3 applies only to distance beyond this baseline.
+    gas_plant_to_nearest_wellhead_distance_km: float = 2.0
 
     # Purification
     # purification_factor is the HyStories economic cost scalar.

@@ -16,8 +16,10 @@ class DrillingDesign:
 
 @dataclass(frozen=True)
 class FieldInterconnectionDesign:
-    field_line_length_per_well_head_km: float
-    field_line_length_km: float 
+    # field_line_length_per_well_head_km: float
+    # field_line_length_km: float 
+    gas_plant_to_nearest_wellhead_distance_km: float
+    additional_field_line_length_km: float
 
 @dataclass(frozen=True)
 class SaltLeachingDesign:
@@ -102,17 +104,29 @@ def construct_drilling_design(
         drilling_complexity_index=drilling_complexity_index
     )
 
+HYSTORIES_BASELINE_GAS_PLANT_DISTANCE_KM = 0.5
+
+
 def construct_field_interconnection_design(
-        field_line_length_per_well_head_km: float,
-        field_line_length_km: float,
-):
-    
-    _validate_positive(field_line_length_per_well_head_km, 'field_line_length_per_well_head_km')
-    _validate_positive(field_line_length_km, 'field_line_length_km')
+    gas_plant_to_nearest_wellhead_distance_km: float,
+) -> FieldInterconnectionDesign:
+
+    _validate_positive(
+        gas_plant_to_nearest_wellhead_distance_km,
+        "gas_plant_to_nearest_wellhead_distance_km",
+    )
+
+    additional_field_line_length_km = max(
+        gas_plant_to_nearest_wellhead_distance_km
+        - HYSTORIES_BASELINE_GAS_PLANT_DISTANCE_KM,
+        0.0,
+    )
 
     return FieldInterconnectionDesign(
-        field_line_length_per_well_head_km = field_line_length_per_well_head_km,
-        field_line_length_km=field_line_length_km,
+        gas_plant_to_nearest_wellhead_distance_km=(
+            gas_plant_to_nearest_wellhead_distance_km
+        ),
+        additional_field_line_length_km=additional_field_line_length_km,
     )
 
 def construct_salt_leaching_design(
