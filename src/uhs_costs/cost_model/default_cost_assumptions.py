@@ -18,13 +18,35 @@ class HyStoriesCostAssumptions:
     material_cost_factor_withdrawal: float = 1.0
 
     # Energy and commodity prices
+    #
+    # The electricity price is retained as a reference cost for construction /
+    # commissioning energy and for reduced-form operational OPEX correlations.
+    # Operational compression electricity can instead be left out of UHS OPEX
+    # and represented explicitly in a downstream CEM.
     cost_of_electricity_eur_per_mwh: float = 60.0
     hydrogen_cost_eur_per_kg: float = 4.12
 
-    #OPEX
-    surface_fixed_component_of_fixed_opex = 2100
+    # OPEX
+    surface_fixed_component_of_fixed_opex: float = 2100.0
     surface_fixed_opex_fraction_of_epc: float = 0.04
     subsurface_fixed_opex_fraction_of_wells_capex: float = 0.03
+
+    # HyStories variable surface OPEX treatment.
+    #
+    # True:
+    #   Keep compression electricity inside the injection variable-OPEX rate
+    #   (reduced-form / standalone mode).
+    # False:
+    #   Remove the compression-electricity share from injection OPEX so a CEM
+    #   can represent the compressor electricity demand explicitly. The
+    #   non-electric ancillary share (lubricants, waste, chemicals) is retained.
+    include_compression_electricity_cost_in_opex: bool = False
+
+    # HyStories states that lubricants, waste disposal, and chemicals are
+    # assumed to equal 4% of electricity cost. We use this to separate the
+    # compression-related HyStories OPEX correlation into electricity and
+    # residual ancillary cost when the electricity is externalised to a CEM.
+    compression_ancillary_cost_fraction_of_electricity: float = 0.04
 
 
     # Contingency / BOP / indirects

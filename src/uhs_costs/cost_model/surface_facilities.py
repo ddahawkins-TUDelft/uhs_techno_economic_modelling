@@ -480,7 +480,13 @@ def calculate_surface_cost_components(
 
     surface_variable_opex_injection = surface_opex.variable_opex_rate_injection_eur_per_kwh_h2_lhv(
         cost_of_electricity_eur_per_mwh=assumptions.cost_of_electricity_eur_per_mwh,
-        compression_ratio=project.compression.overall_pressure_ratio
+        compression_ratio=project.compression.overall_pressure_ratio,
+        include_compression_electricity_cost=(
+            assumptions.include_compression_electricity_cost_in_opex
+        ),
+        ancillary_cost_fraction_of_electricity=(
+            assumptions.compression_ancillary_cost_fraction_of_electricity
+        ),
     )
 
     components.append(
@@ -492,7 +498,18 @@ def calculate_surface_cost_components(
             cost_driver=CostDriver.INJECTION_THROUGHPUT_KWH,
             driver_value=1,
             cost_unit=CostUnit.EUR_PER_KWH,
-            notes="HyStories injection component of surface variable opex mapped to injection throughput, euro/kWh_injection",
+            notes=(
+                "HyStories injection compression-related variable OPEX mapped "
+                "to injection throughput. Compression electricity is "
+                + (
+                    "included in this cost rate."
+                    if assumptions.include_compression_electricity_cost_in_opex
+                    else (
+                        "excluded for explicit downstream CEM treatment; only "
+                        "the ancillary lubricants/waste/chemicals allowance is retained."
+                    )
+                )
+            ),
         )
     )
 
