@@ -117,7 +117,8 @@ def construct_project(
     )
 
     purification = construct_purification(
-        purification_factor=assumptions.general.purification_factor
+        purification_factor=assumptions.general.purification_factor,
+        hydrogen_recovery=assumptions.general.purification_hydrogen_recovery,
     )
 
     #determine number of caverns, number of well heads, and actual per cavern withdrawal requirements

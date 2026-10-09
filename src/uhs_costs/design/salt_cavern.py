@@ -21,7 +21,10 @@ from uhs_costs.design.helpers.site_development import (
     construct_salt_leaching_process
 
 )
-from uhs_costs.design.helpers.purification import construct_purification
+from uhs_costs.design.helpers.purification import (
+    construct_purification,
+    gross_withdrawal_from_net,
+)
 from uhs_costs.design.helpers.compression_model import (
     CompressionInput,
     calculate_compression,
@@ -94,12 +97,21 @@ def construct_project(
     )
 
     purification = construct_purification(
-        purification_factor=assumptions.general.purification_factor
+        purification_factor=assumptions.general.purification_factor,
+        hydrogen_recovery=assumptions.general.purification_hydrogen_recovery,
+    )
+
+    # Public/project withdrawal flow is usable post-purification H2.
+    # Physical cavern deliverability must be sized against the larger gross
+    # pre-purification withdrawal where hydrogen recovery is below 100%.
+    gross_withdrawal_flow_million_sm3_per_day = gross_withdrawal_from_net(
+        flows.withdrawal_flow_million_sm3_per_day,
+        purification.hydrogen_recovery,
     )
 
     #determine number of caverns, number of well heads, and actual per cavern withdrawal requirements
     number_caverns_for_storage_capacity_requirements = ceil(inventory.working_gas_h2_volume_sm3 / assumptions.technology_specific.working_gas_volume_per_cavern_sm3)
-    number_caverns_for_withdrawal_requirements = ceil(flows.withdrawal_flow_million_sm3_per_day / assumptions.technology_specific.maximum_withdrawal_flow_per_cavern_million_sm3_per_day)
+    number_caverns_for_withdrawal_requirements = ceil(gross_withdrawal_flow_million_sm3_per_day / assumptions.technology_specific.maximum_withdrawal_flow_per_cavern_million_sm3_per_day)
     number_caverns = max(number_caverns_for_storage_capacity_requirements, number_caverns_for_withdrawal_requirements)
     # withdrawal_flow_per_cavern_million_sm3_per_day = flows.withdrawal_flow_million_sm3_per_day / number_caverns
     

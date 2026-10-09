@@ -9,10 +9,14 @@ from uhs_costs.constants import (
 
 @dataclass(frozen=True)
 class StorageFlows:
-    """Storage injection and withdrawal flow rates.
+    """Storage injection and withdrawal flows at the system/CEM interface.
 
-    The kW values are the primary energy-system inputs.
-    The standard-volume flow rates and WTIR are derived quantities.
+    Injection is H2 taken from the external system into UHS. Withdrawal is
+    usable H2 delivered back to the external system after purification. The
+    standard-volume rates and WTIR therefore use the same CEM-facing basis.
+
+    Gross pre-purification withdrawal is derived internally only where needed
+    for engineering sizing and cost equations.
     """
 
     withdrawal_flow_kw_h2_lhv: float

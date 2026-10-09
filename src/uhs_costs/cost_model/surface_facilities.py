@@ -1,6 +1,7 @@
 
 from uhs_costs.cost_model.helpers import abex, surface_capex,surface_opex
 from uhs_costs.design.helpers.project import StorageProject
+from uhs_costs.design.helpers.purification import gross_withdrawal_from_net
 from uhs_costs.cost_model.default_cost_assumptions import  HyStoriesCostAssumptions
 from uhs_costs.cost_model.helpers.cost_components import (
     CostComponent,
@@ -37,6 +38,15 @@ def calculate_surface_cost_components(
 
     if components is None:
         components: list[CostComponent] = []
+
+    # project.flows uses the CEM/system-interface basis. Withdrawal is usable
+    # post-purification H2. HyStories surface equipment must process gross
+    # pre-purification flow, so derive that quantity only for internal cost
+    # equations. CostComponent drivers remain net so returned rates are CEM-ready.
+    gross_withdrawal_flow_million_sm3_per_day = gross_withdrawal_from_net(
+        project.flows.withdrawal_flow_million_sm3_per_day,
+        project.purification.hydrogen_recovery,
+    )
  
     # ---------------------------------------------------------------------------------------------------------------
     #
@@ -50,7 +60,7 @@ def calculate_surface_cost_components(
     )
 
     surface_epc1_withdrawal = surface_capex.epc1_withdrawal_cost_eur(
-        withdrawal_flow_million_sm3_per_day=project.flows.withdrawal_flow_million_sm3_per_day,
+        withdrawal_flow_million_sm3_per_day=gross_withdrawal_flow_million_sm3_per_day,
         material_cost_factor_withdrawal=assumptions.material_cost_factor_withdrawal
     )
 
@@ -104,7 +114,7 @@ def calculate_surface_cost_components(
     # ---------------------------------------------------------------------------------------------------------------
 
     surface_epc2_fieldlines = surface_capex.epc2_fieldlines_cost_eur(
-        withdrawal_flow_million_sm3_per_day=project.flows.withdrawal_flow_million_sm3_per_day,
+        withdrawal_flow_million_sm3_per_day=gross_withdrawal_flow_million_sm3_per_day,
         operating_pressure_ratio=project.pressures.operating_pressure_ratio,
         material_cost_factor_withdrawal=assumptions.material_cost_factor_withdrawal,
         number_well_heads=project.wells.number_well_heads
@@ -148,7 +158,7 @@ def calculate_surface_cost_components(
     # ---------------------------------------------------------------------------------------------------------------
 
     surface_epc3_well_interconnection = surface_capex.epc3_well_interconnection_cost_eur(
-        withdrawal_flow_million_sm3_per_day=project.flows.withdrawal_flow_million_sm3_per_day,
+        withdrawal_flow_million_sm3_per_day=gross_withdrawal_flow_million_sm3_per_day,
         operating_pressure_ratio=project.pressures.operating_pressure_ratio,
         material_cost_factor_withdrawal=assumptions.material_cost_factor_withdrawal,
         filled_lines_length_km=project.field_interconnection.field_line_length_km
@@ -174,7 +184,7 @@ def calculate_surface_cost_components(
     # ---------------------------------------------------------------------------------------------------------------
 
     surface_epc4_purification = surface_capex.epc4_purification_cost_eur(
-        withdrawal_flow_million_sm3_per_day=project.flows.withdrawal_flow_million_sm3_per_day,
+        withdrawal_flow_million_sm3_per_day=gross_withdrawal_flow_million_sm3_per_day,
         purification_factor=project.purification.purification_factor
     )
 
@@ -513,9 +523,17 @@ def calculate_surface_cost_components(
         )
     )
 
-    surface_variable_opex_withdrawal = surface_opex.variable_opex_rate_withdrawal_eur_per_kwh_h2_lhv(
+    surface_variable_opex_withdrawal_gross = surface_opex.variable_opex_rate_withdrawal_eur_per_kwh_h2_lhv(
         cost_of_electricity_eur_per_mwh=assumptions.cost_of_electricity_eur_per_mwh,
         purification_coefficient=project.purification.purification_factor
+    )
+
+    # HyStories' withdrawal rate is on gross throughput. Calliope applies
+    # cost_flow_out to usable post-efficiency output, so return a net-basis
+    # CEM-ready rate.
+    surface_variable_opex_withdrawal = gross_withdrawal_from_net(
+        surface_variable_opex_withdrawal_gross,
+        project.purification.hydrogen_recovery,
     )
 
     components.append(
@@ -527,7 +545,10 @@ def calculate_surface_cost_components(
             cost_driver=CostDriver.WITHDRAWAL_THROUGHPUT_KWH,
             driver_value=1,
             cost_unit=CostUnit.EUR_PER_KWH,
-            notes="HyStories withdrawal component of surface variable opex mapped to withdrawal capacity, euro/kWh_withdrawal",
+            notes=(
+                "HyStories withdrawal variable OPEX normalised to usable "
+                "post-purification H2 throughput for direct CEM use."
+            ),
         )
     )
 

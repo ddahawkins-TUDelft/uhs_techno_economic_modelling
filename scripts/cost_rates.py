@@ -278,6 +278,11 @@ def extract_design_characteristics(project: StorageProject) -> dict[str, Any]:
         # Compression / purification
         # ---------------------------------------------------------------------
         "Compression method": project.compression.method.value,
+        "Compression electricity [kWh_e/kWh_H2]": (
+            project.compression.electricity_kwh_per_kwh_h2_lhv
+        ),
+        "Purification H2 recovery": project.purification.hydrogen_recovery,
+        "Purification cost factor": project.purification.purification_factor,
         # "Compression inlet temperature [K]": project.compression.inlet_temperature_k,
         "Compression inlet pressure [bar]": project.compression.inlet_pressure_pa / 1e5,
         "Compression outlet pressure [bar]": project.compression.outlet_pressure_pa / 1e5,

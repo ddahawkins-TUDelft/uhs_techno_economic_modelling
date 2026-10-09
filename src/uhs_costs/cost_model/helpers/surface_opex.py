@@ -160,7 +160,7 @@ def variable_opex_rate_injection_compression_ancillary_eur_per_kwh_h2_lhv(
 def variable_opex_rate_injection_eur_per_kwh_h2_lhv(
     cost_of_electricity_eur_per_mwh: float,
     compression_ratio: float,
-    include_compression_electricity_cost: bool = False,
+    include_compression_electricity_cost: bool = True,
     ancillary_cost_fraction_of_electricity: float = 0.04,
 ) -> float:
     """Injection variable OPEX under the selected compression-energy treatment.

@@ -31,8 +31,12 @@ class GeneralDesignAssumptions:
     field_line_length_per_well_head_km: float = 0.5
     drilling_complexity_index: float = 1.0
 
-    #cleaning
-    purification_factor: float = 0.0 #this is modified by construct_general_design_assumptions() below. TODO: should be a tech-specific parameter in the future
+    # Purification
+    # purification_factor is the HyStories economic cost scalar.
+    # purification_hydrogen_recovery is the physical fraction of gross
+    # withdrawal delivered as usable H2 to the downstream system.
+    purification_factor: float = 0.0
+    purification_hydrogen_recovery: float = 1.0
 
     #reference depth
     reference_reservoir_depth_m: float | None = None
@@ -194,6 +198,7 @@ def construct_general_design_assumptions(
     if storage_technology == StorageTechnology.SALT_CAVERN:
         assumptions = GeneralDesignAssumptions(
             purification_factor=0.0,
+            purification_hydrogen_recovery=1.0,
             reference_reservoir_depth_m=1_000.0,
             recovery_factor=0.9983
         )
@@ -201,6 +206,7 @@ def construct_general_design_assumptions(
     elif storage_technology == StorageTechnology.LINED_ROCK_CAVERN:
         assumptions = GeneralDesignAssumptions(
             purification_factor=0.0,
+            purification_hydrogen_recovery=1.0,
             reference_reservoir_depth_m=150.0,
             recovery_factor=1
         )
@@ -208,12 +214,14 @@ def construct_general_design_assumptions(
     elif storage_technology ==  StorageTechnology.DEPLETED_GAS_FIELD:
         assumptions = GeneralDesignAssumptions(
             purification_factor=1.5,
+            purification_hydrogen_recovery=0.90,
             reference_reservoir_depth_m=1_200.0,
             recovery_factor=0.8
         )
     elif storage_technology == StorageTechnology.AQUIFER:
         assumptions = GeneralDesignAssumptions(
             purification_factor=1.5,
+            purification_hydrogen_recovery=1.0,
             reference_reservoir_depth_m=1_300.0,
             recovery_factor=0.9
         )
