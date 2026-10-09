@@ -214,8 +214,8 @@ SENSITIVITY_LABELS = {
 # Plot labels: E and EPR are shown relative to their technology-specific default;
 # WTIR retains its natural numerical value.
 SENSITIVITY_AXIS_LABELS = {
-    "storage_capacity_gwh_lhv": r"Working-gas capacity, $E/E_0$ [-]",
-    "epr_days": r"Energy-to-power ratio, $EPR/EPR_0$ [-]",
+    "storage_capacity_gwh_lhv": "Working-gas capacity,\n $E/E_0$ [-]",
+    "epr_days": "Energy-to-power ratio,\n $EPR/EPR_0$ [-]",
     "wtir": "WTIR [-]",
 }
 
@@ -900,7 +900,7 @@ def plot_component_rate_factors(
     fig, axes = plt.subplots(
         nrows=len(COMPONENT_GROUPS),
         ncols=len(sensitivities),
-        figsize=(10.5, 7.5),
+        figsize=(9, 12),
         squeeze=False,
         sharex="col",
         sharey=True
@@ -966,14 +966,14 @@ def plot_component_rate_factors(
     fig.legend(
         unique.values(),
         unique.keys(),
-        loc="lower center",
-        ncol=5,
+        loc="upper center",
+        ncol=3,
         frameon=False,
-        bbox_to_anchor=(0.5, -0.01),
+        bbox_to_anchor=(0.5, 1.0),
     )
 
-    fig.suptitle("Sensitivity of CEM TCR rates to linearisation design point", y=1.01)
-    fig.tight_layout(rect=(0, 0.07, 1, 1))
+    # fig.suptitle("Sensitivity of CEM TCR rates to linearisation design point", y=1.01)
+    fig.tight_layout(rect=(0, 0.0, 1, 0.96))
     save_figure(fig, figure_dir / "component_tcr_rate_factors")
 
 
