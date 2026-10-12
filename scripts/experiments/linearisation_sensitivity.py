@@ -176,8 +176,8 @@ TECHNOLOGIES: tuple[TechnologySpec, ...] = (
         case_name="depleted_gas_field",
         project_constructor=construct_dgf_project,
         cost_function=calculate_depleted_gas_field_cost_components,
-        default_storage_capacity_gwh_lhv=2000.0,
-        default_epr_days=60.0,
+        default_storage_capacity_gwh_lhv=1700.0,
+        default_epr_days=66.0,
         default_wtir=2.0,
     ),
     TechnologySpec(
@@ -186,8 +186,8 @@ TECHNOLOGIES: tuple[TechnologySpec, ...] = (
         case_name="aquifer",
         project_constructor=construct_aquifer_project,
         cost_function=calculate_aquifer_cost_components,
-        default_storage_capacity_gwh_lhv=1800.0,
-        default_epr_days=60.0,
+        default_storage_capacity_gwh_lhv=1700.0,
+        default_epr_days=66.0,
         default_wtir=2.0,
     ),
     TechnologySpec(
@@ -197,7 +197,7 @@ TECHNOLOGIES: tuple[TechnologySpec, ...] = (
         project_constructor=construct_lrc_project,
         cost_function=calculate_lined_rock_cavern_cost_components,
         default_storage_capacity_gwh_lhv=20.0,
-        default_epr_days=7.0,
+        default_epr_days=8.0,
         default_wtir=2.0,
     ),
 )

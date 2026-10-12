@@ -238,9 +238,9 @@ def extract_design_characteristics(project: StorageProject) -> dict[str, Any]:
         # "Field line length per well head [km]": (
         #     project.field_interconnection.field_line_length_per_well_head_km
         # ),
-        # "Total field line length [km]": (
-        #     project.field_interconnection.field_line_length_km
-        # ),
+        "Total field line length [km]": (
+            project.field_interconnection.additional_field_line_length_km
+        ),
 
         # ---------------------------------------------------------------------
         # Salt cavern-specific

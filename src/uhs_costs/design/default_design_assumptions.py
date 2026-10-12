@@ -25,7 +25,7 @@ class GeneralDesignAssumptions:
     abandonment_pressure_pa: float = 0
 
     # Pipeline assumptions
-    pipeline_pressure_pa: float = 4.0e6
+    pipeline_pressure_pa: float = 5.5e6
 
     # Wells / field lines
     drilling_complexity_index: float = 1.0
