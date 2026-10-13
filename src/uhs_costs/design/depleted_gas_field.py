@@ -39,7 +39,7 @@ ASSUMPTIONS =  construct_hystories_design_assumptions(
         'reference_reservoir_depth_m': 1957, #from calibration script
         'minimum_operating_pressure_pa': 77.83e5, #from calibration script
         'maximum_operating_pressure_pa': 151.62e5, #from calibration script
-        'abandonment_pressure_pa': 46.04e6, #from calibration script
+        'abandonment_pressure_pa': 46.04e5, #from calibration script
     }
 )
 
