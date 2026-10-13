@@ -459,8 +459,8 @@ SENSITIVITY_SPECS: tuple[SensitivitySpec, ...] = (
                 },
                 default={
                     "salt_cavern": 1000.0,
-                    "depleted_gas_field": 1600.0,
-                    "aquifer": 1600.0,
+                    "depleted_gas_field": 1957.0,
+                    "aquifer": 1162.0,
                     "lined_rock_cavern": 150.0,
                 },
                 high={
@@ -498,8 +498,8 @@ SENSITIVITY_SPECS: tuple[SensitivitySpec, ...] = (
                 },
                 default={
                     "salt_cavern": 72.0,
-                    "depleted_gas_field": 62.0,
-                    "aquifer": 62.0,
+                    "depleted_gas_field": 77.83,
+                    "aquifer": 118.59,
                 },
                 high={
                     "salt_cavern": 102.0,
@@ -536,8 +536,8 @@ SENSITIVITY_SPECS: tuple[SensitivitySpec, ...] = (
                 },
                 default={
                     "salt_cavern": 180.0,
-                    "depleted_gas_field": 132.0,
-                    "aquifer": 132.0,
+                    "depleted_gas_field": 151.62,
+                    "aquifer": 143.67,
                     "lined_rock_cavern": 200.0,
                 },
                 high={
@@ -568,7 +568,7 @@ SENSITIVITY_SPECS: tuple[SensitivitySpec, ...] = (
                 override_scope="design_general",
                 parameter="abandonment_pressure_pa",
                 low=30.0,
-                default=50.0,
+                default=46.04,
                 high=106.0,
                 unit="bar",
                 input_scale=1e5,

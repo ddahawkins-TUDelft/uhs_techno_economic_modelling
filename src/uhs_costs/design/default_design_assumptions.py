@@ -231,7 +231,7 @@ def construct_general_design_assumptions(
             purification_factor=0.33,
             purification_hydrogen_recovery=0.8996,
             reference_reservoir_depth_m=1_600.0,
-            recovery_factor=0.9
+            recovery_factor=0.95
         )
 
     else:
