@@ -61,8 +61,6 @@ def calculate_cost_components(
         cost_of_electricity_eur_per_mwh=assumptions.cost_of_electricity_eur_per_mwh
     )
 
-    print(project.porous_first_fill_process.first_gas_fill_duration_years)
-
     components.append(
         CostComponent(
             name="subsurface_epc3_first_fill",
