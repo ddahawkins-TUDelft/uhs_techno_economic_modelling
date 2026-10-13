@@ -52,6 +52,10 @@ class GeneralDesignAssumptions:
     # recovery factor
     recovery_factor: float = 1
 
+    #variable-volume gas storages (Aquifers)
+    minimum_gas_saturation: float = 0.6 #source=https://doi.org/10.1016/j.ijhydene.2021.09.174
+    maximum_gas_saturation: float = 0.8 #source=https://doi.org/10.1016/j.est.2024.112916
+
 
 @dataclass(frozen=True)
 class SaltCavernDesignAssumptions:
@@ -224,7 +228,7 @@ def construct_general_design_assumptions(
         )
     elif storage_technology == StorageTechnology.AQUIFER:
         assumptions = GeneralDesignAssumptions(
-            purification_factor=1.5,
+            purification_factor=0,
             purification_hydrogen_recovery=0.8996,
             reference_reservoir_depth_m=1_300.0,
             recovery_factor=0.9

@@ -9,7 +9,8 @@ from __future__ import annotations
 from math import ceil
 
 from uhs_costs.design.helpers.project import StorageProject, StorageTechnology
-from uhs_costs.design.helpers.storage_inventory import construct_storage_inventory, StorageInventory
+from uhs_costs.design.helpers.storage_inventory import StorageInventory
+from uhs_costs.design.helpers.aquifer_storage_inventory import construct_aquifer_storage_inventory
 from uhs_costs.design.helpers.storage_flows import construct_storage_flows, StorageFlows
 from uhs_costs.design.helpers.storage_pressures import construct_storage_pressures
 from uhs_costs.design.helpers.well_design import construct_well_design
@@ -65,13 +66,15 @@ def construct_project(
     overridden through keyword arguments.
     """
     #construct StorageInventory
-    inventory = construct_storage_inventory(
+    inventory = construct_aquifer_storage_inventory(
         working_gas_capacity_kwh_lhv=working_gas_capacity_kwh_lhv,
         temperature_k=assumptions.general.temperature_k,
         maximum_pressure_pa=assumptions.general.maximum_operating_pressure_pa,
         minimum_pressure_pa=assumptions.general.minimum_operating_pressure_pa,
-        abandonment_pressure_pa=assumptions.general.abandonment_pressure_pa,
-        recovery_factor=assumptions.general.recovery_factor
+        recovery_factor=assumptions.general.recovery_factor,
+        minimum_gas_saturation=assumptions.general.minimum_gas_saturation,
+        maximum_gas_saturation=assumptions.general.maximum_gas_saturation,
+
     )
 
     #construct StorageFlows
