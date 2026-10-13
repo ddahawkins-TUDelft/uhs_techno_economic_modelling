@@ -37,10 +37,10 @@ from uhs_costs.design.default_design_assumptions import HyStoriesDesignAssumptio
 ASSUMPTIONS =  construct_hystories_design_assumptions(
     storage_technology=StorageTechnology.AQUIFER,
     general_overrides={
-        'reference_reservoir_depth_m': 1300,
-        'minimum_operating_pressure_pa': 12.95e6, #https://doi.org/10.1016/j.ijhydene.2022.09.284
-        'maximum_operating_pressure_pa': 19.93e6, #https://doi.org/10.1016/j.ijhydene.2022.09.284
-        'abandonment_pressure_pa': 0, #https://doi.org/10.1016/j.ijhydene.2022.09.284
+        'reference_reservoir_depth_m': 1600,
+        'minimum_operating_pressure_pa': 62e5, 
+        'maximum_operating_pressure_pa': 132e5,
+        'abandonment_pressure_pa': 0,
     }
 )
 

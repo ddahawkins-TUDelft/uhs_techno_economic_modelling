@@ -685,6 +685,103 @@ SENSITIVITY_SPECS: tuple[SensitivitySpec, ...] = (
             "low/mid/high CAPEX labels."
         ),
     ),
+    
+    SensitivitySpec(
+        key="aquifer_min_saturation_design",
+        label="Aquifer minimum gas saturation",
+        category="Wellfield / cavern design",
+        technologies=("aquifer",),
+        overrides=(
+            SensitivityOverride(
+                override_scope="design_general",
+                parameter="minimum_gas_saturation",
+                low=0.50,
+                default=0.60,
+                high=0.70,
+                unit="fraction",
+            ),
+        ),
+        range_basis="literature-anchored screening",
+        source=(
+            "Heinemann et al. (2021), "
+            "https://doi.org/10.1016/j.ijhydene.2021.09.174; "
+            "Döpp et al. (2025), "
+            "https://doi.org/10.1007/s40948-025-00982-y"
+        ),
+        note=(
+            "The minimum gas saturation represents the effective hydrogen-filled "
+            "fraction of the developed aquifer pore volume at minimum operating "
+            "inventory. The reference value of 0.60 is a screening assumption "
+            "informed by reservoir-scale simulations, rather than a directly "
+            "measured minimum saturation. Döpp et al. (2025) report near-well "
+            "gas saturations of approximately 0.50-0.60 in their Ketzin model, "
+            "with a base-case value of 0.64 and values around 0.61-0.70 in "
+            "several geological sensitivity cases. Their low-permeability case "
+            "reaches only 0.44, illustrating less favourable conditions outside "
+            "the intended screening envelope. Heinemann et al. (2021) impose "
+            "a gas-saturation shutdown threshold of 0.70 beneath the well "
+            "perforations to prevent water breakthrough. This is an operational "
+            "criterion, not a measured reservoir-wide minimum. The 0.50-0.70 "
+            "range therefore explores alternative minimum-inventory states "
+            "for selected, hydraulically suitable aquifers. Applying these "
+            "local simulated saturations to the entire effective developed "
+            "pore volume is an explicit first-order modelling approximation. "
+            "Higher minimum saturation increases the calculated hydrogen "
+            "cushion requirement, all else equal."
+        ),
+    ),
+    SensitivitySpec(
+        key="aquifer_max_saturation_design",
+        label="Aquifer maximum gas saturation",
+        category="Wellfield / cavern design",
+        technologies=("aquifer",),
+        overrides=(
+            SensitivityOverride(
+                override_scope="design_general",
+                parameter="maximum_gas_saturation",
+                low=0.75,
+                default=0.80,
+                high=0.90,
+                unit="fraction",
+            ),
+        ),
+        range_basis="experimental literature + screening",
+        source=(
+            "Hydrogen relative-permeability measurements in Bentheimer sandstone, "
+            "https://doi.org/10.1016/j.ijhydene.2023.07.270; "
+            "Thaysen et al. (2024), "
+            "https://doi.org/10.1016/j.est.2024.112916; "
+            "Hydrogen pore-scale imaging study (2025), "
+            "https://doi.org/10.1016/j.ijhydene.2025.02.066; "
+            "Ren et al. (2026), "
+            "https://doi.org/10.1016/j.enconman.2026.121195"
+        ),
+        note=(
+            "The maximum gas saturation represents the effective hydrogen-filled "
+            "fraction of developed aquifer pore volume at maximum inventory, "
+            "allowing for brine remaining after hydrogen drainage. Experimental "
+            "hydrogen-brine measurements in Bentheimer sandstone report an "
+            "irreducible water saturation of approximately 0.24, corresponding "
+            "to a gas saturation of 0.76. A separate Bentheimer pore-scale "
+            "imaging study reports an average hydrogen saturation of 0.82 "
+            "after drainage. Thaysen et al. (2024) report irreducible water "
+            "saturations of 0.126-0.140 in Clashach sandstone at a specified "
+            "capillary pressure, corresponding to gas saturations of "
+            "approximately 0.86-0.87. These results motivate the 0.80 "
+            "reference for favourable sandstone formations. The 0.75 lower "
+            "case is close to the Bentheimer irreducible-water endpoint, "
+            "while 0.85 is a screening bound based on"
+            "the measured Clashach values, not a universal geological limit. "
+            "Ren et al. (2026) additionally report geological input values "
+            "for irreducible brine saturation spanning 0.20-0.65, demonstrating "
+            "substantial site variability; these are not direct hydrogen "
+            "drainage measurements. The assumed endpoint represents an "
+            "effective reservoir-wide saturation rather than a resolved "
+            "spatial saturation distribution. Lower maximum saturation "
+            "increases the required developed pore volume and hydrogen "
+            "cushion inventory for a fixed working capacity."
+        ),
+    ),
     SensitivitySpec(
         key="porous_wellfield_design",
         label="Porous-media wellfield design",
@@ -2080,6 +2177,91 @@ def project_diagnostics(project: Any) -> dict[str, Any]:
     }
 
 
+def print_aquifer_saturation_diagnostic(
+    *,
+    label: str,
+    design_assumptions: Any,
+    project: Any,
+    cost_breakdown: Any,
+) -> None:
+    """Audit the aquifer saturation-to-inventory-to-cost calculation."""
+
+    import uhs_costs.gas_properties.hydrogen as hydrogen
+
+    general = design_assumptions.general
+    inventory = project.inventory
+
+    s_min = general.minimum_gas_saturation
+    s_max = general.maximum_gas_saturation
+
+    p_min = general.minimum_operating_pressure_pa
+    p_max = general.maximum_operating_pressure_pa
+    temperature = general.temperature_k
+
+    rho_min = hydrogen.molar_density(
+        pressure_pa=p_min,
+        temperature_k=temperature,
+    )
+    rho_max = hydrogen.molar_density(
+        pressure_pa=p_max,
+        temperature_k=temperature,
+    )
+
+    # Independently reconstruct the expected cushion / working ratio.
+    expected_ratio = (
+        rho_min * s_min
+        / (rho_max * s_max - rho_min * s_min)
+    )
+
+    actual_ratio = (
+        inventory.cushion_gas_h2_mass_kg
+        / inventory.working_gas_h2_mass_kg
+    )
+
+    assert math.isclose(
+        actual_ratio,
+        expected_ratio,
+        rel_tol=1e-9,
+    ), (
+        f"{label}: cushion inventory does not match "
+        f"the saturation-weighted density calculation."
+    )
+
+    storage_tcr = summarise_tcr_rates(cost_breakdown)["Storage"]
+
+    # Find the underlying cushion-cost components.
+    cushion_components = [
+        component
+        for component in get_cost_components(cost_breakdown)
+        if "cushion" in normalise_name(component.name)
+    ]
+
+    cushion_capex_eur = sum(
+        float(component.value_eur)
+        for component in cushion_components
+        if get_cost_type(component) == "capex"
+    )
+
+    print(
+        f"{label:24s} "
+        f"Smin={s_min:.2f} "
+        f"Smax={s_max:.2f} "
+        f"Vp={inventory.required_storage_volume_m3 / 1e6:7.2f} Mm3 "
+        f"Cushion={inventory.cushion_gas_h2_mass_kg / 1e6:7.2f} kt "
+        f"C/W={actual_ratio:6.3f} "
+        f"Cushion CAPEX={cushion_capex_eur / 1e6:8.2f} MEUR "
+        f"Storage TCR={storage_tcr:7.4f} EUR/kWh"
+    )
+
+    # Fail explicitly if the expected cost component cannot be found.
+    if not cushion_components:
+        print(
+            "  WARNING: No cost component containing 'cushion' "
+            "was found. Check the component naming."
+        )
+
+
+
 # =============================================================================
 # Baseline and sensitivity runs
 # =============================================================================
@@ -2100,6 +2282,14 @@ def run_default_case(technology: TechnologySpec) -> dict[str, Any]:
         lrc_overrides=lrc_overrides,
     )
     rates = summarise_tcr_rates(breakdown)
+
+    if technology.technology == "aquifer":
+        print_aquifer_saturation_diagnostic(
+            label="Baseline",
+            design_assumptions=design_assumptions,
+            project=project,
+            cost_breakdown=breakdown,
+        )
 
     return {
         "project": project,
@@ -2135,6 +2325,20 @@ def run_sensitivity_case(
     )
     rates = summarise_tcr_rates(breakdown)
     total_tcr = total_project_tcr_eur(breakdown)
+
+    if (
+        technology.technology == "aquifer"
+        and sensitivity.key in {
+            "aquifer_min_saturation_design",
+            "aquifer_max_saturation_design",
+        }
+    ):
+        print_aquifer_saturation_diagnostic(
+            label=f"{sensitivity.key.replace('aquifer_', '')} [{level}]",
+            design_assumptions=design_assumptions,
+            project=project,
+            cost_breakdown=breakdown,
+        )
 
     row: dict[str, Any] = {
         "sensitivity": sensitivity.key,

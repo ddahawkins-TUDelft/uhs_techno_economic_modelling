@@ -223,14 +223,14 @@ def construct_general_design_assumptions(
         assumptions = GeneralDesignAssumptions(
             purification_factor=1.5,
             purification_hydrogen_recovery=0.8996,
-            reference_reservoir_depth_m=1_200.0,
+            reference_reservoir_depth_m=1_600.0,
             recovery_factor=0.8
         )
     elif storage_technology == StorageTechnology.AQUIFER:
         assumptions = GeneralDesignAssumptions(
-            purification_factor=0,
+            purification_factor=0.33,
             purification_hydrogen_recovery=0.8996,
-            reference_reservoir_depth_m=1_300.0,
+            reference_reservoir_depth_m=1_600.0,
             recovery_factor=0.9
         )
 

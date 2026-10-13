@@ -41,8 +41,8 @@ ASSUMPTIONS =  construct_hystories_design_assumptions(
     storage_technology=StorageTechnology.LINED_ROCK_CAVERN,
     general_overrides={
         'reference_reservoir_depth_m': 150,
-        'minimum_operating_pressure_pa': 4.0e6,
-        'maximum_operating_pressure_pa': 20e6,
+        'minimum_operating_pressure_pa': 55e5,
+        'maximum_operating_pressure_pa': 200e5,
         'abandonment_pressure_pa': 0,
     }
 )

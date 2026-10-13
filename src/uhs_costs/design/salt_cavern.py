@@ -43,8 +43,8 @@ ASSUMPTIONS =  construct_hystories_design_assumptions(
     storage_technology=StorageTechnology.SALT_CAVERN,
     general_overrides={
         'reference_reservoir_depth_m': 1000,
-        'minimum_operating_pressure_pa': 9.0e6,
-        'maximum_operating_pressure_pa': 24e6,
+        'minimum_operating_pressure_pa': 72e5,
+        'maximum_operating_pressure_pa': 180e5,
         'abandonment_pressure_pa': 0,
     }
 )

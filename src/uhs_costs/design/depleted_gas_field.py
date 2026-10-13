@@ -36,10 +36,10 @@ from uhs_costs.design.default_design_assumptions import HyStoriesDesignAssumptio
 ASSUMPTIONS =  construct_hystories_design_assumptions(
     storage_technology=StorageTechnology.DEPLETED_GAS_FIELD,
     general_overrides={
-        'reference_reservoir_depth_m': 1200,
-        'minimum_operating_pressure_pa': 18.5e6,
-        'maximum_operating_pressure_pa': 25.1e6,
-        'abandonment_pressure_pa': 10.6e6,
+        'reference_reservoir_depth_m': 1600,
+        'minimum_operating_pressure_pa': 62e5,
+        'maximum_operating_pressure_pa': 132e5,
+        'abandonment_pressure_pa': 50.0e6,
     }
 )
 

@@ -1,0 +1,9 @@
+scope,selection,type,records
+strict,eligible,hydrocarbon_candidate,30
+strict,eligible,saline_aquifer,134
+strict,numerically_ready,hydrocarbon_candidate,3
+strict,numerically_ready,saline_aquifer,74
+expanded,eligible,hydrocarbon_candidate,63
+expanded,eligible,saline_aquifer,134
+expanded,numerically_ready,hydrocarbon_candidate,11
+expanded,numerically_ready,saline_aquifer,74

@@ -1,0 +1,198 @@
+TRAP_ID,TRAP_NAME,COUNTRY,reservoir_type,status_normalised,depth_m,current_pressure_bar,max_pressure_bar,wells_penetrating,wells_abandoned,pressure_quality,completeness_tier,quality_flags,uhs_kind,numerically_ready
+DE_T_20120927160018348,Zechstein Daughter Unit 1,Germany,gas_field,abandoned,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+DK_T_20120905094522734,Tønder Structure,Denmark,saline_aquifer,unspecified,1615.0,160.0,240.0,5.0,5.0,review,A,current_pressure_parent_difference_over_50pct;danish_pressure_units_corrected_mpa_to_bar;max_pressure_parent_difference_over_50pct,saline_aquifer,True
+DK_T_20120905113144082,Vedsted structure,Denmark,saline_aquifer,unspecified,1893.0,190.0,280.0,1.0,1.0,review,A,current_pressure_parent_difference_over_50pct;danish_pressure_units_corrected_mpa_to_bar;max_pressure_parent_difference_over_50pct,saline_aquifer,True
+DK_T_20120905125809562,Rødby structure,Denmark,saline_aquifer,unspecified,1125.0,110.0,170.0,,2.0,review,A,current_pressure_parent_difference_over_50pct;danish_pressure_units_corrected_mpa_to_bar;max_pressure_parent_difference_over_50pct;wells_penetrating_unreported,saline_aquifer,True
+DK_T_20120905125855837,Gassum structure,Denmark,saline_aquifer,unspecified,1460.0,146.0,220.0,1.0,1.0,review,A,current_pressure_parent_difference_over_50pct;danish_pressure_units_corrected_mpa_to_bar;max_pressure_parent_difference_over_50pct,saline_aquifer,True
+DK_T_20120905125927410,Hanstholm structure,Denmark,saline_aquifer,unspecified,1000.0,100.0,150.0,,,review,A,current_pressure_parent_difference_over_50pct;danish_pressure_units_corrected_mpa_to_bar;max_pressure_parent_difference_over_50pct;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+DK_T_20120905130017746,Havnsø structure,Denmark,saline_aquifer,unspecified,1500.0,150.0,220.0,,,review,A,current_pressure_parent_difference_over_50pct;danish_pressure_units_corrected_mpa_to_bar;max_pressure_parent_difference_over_50pct;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+DK_T_20120905130036634,Pårup structure,Denmark,saline_aquifer,unspecified,1550.0,150.0,225.0,0.0,0.0,review,A,current_pressure_parent_difference_over_50pct;danish_pressure_units_corrected_mpa_to_bar;max_pressure_parent_difference_over_50pct,saline_aquifer,True
+DK_T_20120905130059068,Stenlille structure,Denmark,saline_aquifer,unspecified,1507.0,150.0,230.0,5.0,,review,A,current_pressure_parent_difference_over_50pct;danish_pressure_units_corrected_mpa_to_bar;max_pressure_parent_difference_over_50pct;wells_abandoned_unreported,saline_aquifer,True
+DK_T_20120905130308069,Voldum structure,Denmark,saline_aquifer,unspecified,1757.0,180.0,260.0,,,review,A,current_pressure_parent_difference_over_50pct;danish_pressure_units_corrected_mpa_to_bar;max_pressure_parent_difference_over_50pct;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+DK_T_20121007205813741,Thisted,Denmark,saline_aquifer,unspecified,1200.0,120.0,180.0,2.0,1.0,review,A,current_pressure_parent_difference_over_50pct;danish_pressure_units_corrected_mpa_to_bar;max_pressure_parent_difference_over_50pct,saline_aquifer,True
+FR_T_20121031165948995,Aquitaine ADU,France,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+FR_T_20121031170005524,Sud-Est ADU,France,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+BE_T_20120926152350687,De verloren Kamp structure,Belgium,saline_aquifer,unspecified,1550.0,152.0,,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+BE_T_20121001143638046,Poederlee Structure,Belgium,saline_aquifer,unspecified,1600.0,161.0,,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+BG_T_20121115085801849,Galata DU,Bulgaria,hydrocarbon_unknown,depleted,,102.0,112.0,2.0,2.0,valid,C,,hydrocarbon_candidate,False
+CZ_T_20121018134818415,Nosislav-Nikolcice,Czech Republic,saline_aquifer,unspecified,945.0,95.0,114.0,8.0,8.0,valid,A,,saline_aquifer,True
+CZ_T_20121018142127654,Ivan,Czech Republic,saline_aquifer,unspecified,800.0,80.0,96.0,5.0,5.0,valid,A,,saline_aquifer,True
+CZ_T_20121018143342432,Kobyli,Czech Republic,saline_aquifer,unspecified,1000.0,100.0,120.0,6.0,6.0,valid,A,,saline_aquifer,True
+CZ_T_20121018144258077,Vlkos-Lobodice,Czech Republic,saline_aquifer,unspecified,800.0,80.0,96.0,11.0,11.0,valid,A,,saline_aquifer,True
+DE_T_20120926145256385,Middle Buntsandstein Daughter Unit 1,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926150707913,Middle Buntsandstein Daughter Unit 2,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926151204732,Middle Buntsandstein Daughter Unit 3,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926151617901,Middle Buntsandstein Daughter Unit 4,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926152427600,Middle Buntsandstein Daughter Unit 5,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926152717282,Middle Buntsandstein Daughter Unit 6,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926153122576,Middle Buntsandstein Daughter Unit 7,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926153308391,Middle Buntsandstein Daughter Unit 8,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926153842340,Middle Buntsandstein Daughter Unit 9,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926155345604,Middle Buntsandstein Daughter Unit 10,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926160449259,Middle Buntsandstein Daughter Unit 11,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926160634309,Middle Buntsandstein Daughter Unit 12,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926160908219,Middle Buntsandstein Daughter Unit 13,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926161039120,Middle Buntsandstein Daughter Unit 14,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926161907953,Middle Buntsandstein Daughter Unit 15,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926162141938,Middle Buntsandstein Daughter Unit 16,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926162329514,Middle Buntsandstein Daughter Unit 17,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926162624125,Middle Buntsandstein Daughter Unit 18,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926162956925,Middle Buntsandstein Daughter Unit 19,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926164007868,Keuper Daughter Unit 1,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926164339357,Keuper Daughter Unit 2,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926164540569,Keuper Daughter Unit 3,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926165126109,Middle Jurassic Daughter Unit 1,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120926165330939,Middle Jurassic Daughter Unit 2,Germany,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+DE_T_20120927082910801,Upper Rotliegend Daughter Unit 1,Germany,gas_field,abandoned,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+DE_T_20120927085438160,Upper Rotliegend Daughter Unit 4,Germany,gas_field,abandoned,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+FR_T_20130208175443854,Dogger carbonaté ADU,France,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+FR_T_20130208175609705,Rhétien-Keuper ADU,France,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+FR_T_20130208180629933,Bundsandstein ADU,France,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+GR_T_20121028172905328,Prinos Aquifer,Greece,saline_aquifer,unspecified,2400.0,310.0,400.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+GR_T_20121028173124731,South Kavala Gas,Greece,hydrocarbon_unknown,abandoned,1720.0,20.0,172.0,,,review,A,current_pressure_parent_difference_over_50pct;max_pressure_parent_difference_over_50pct;wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,True
+GR_T_20121028174157979,Alexandria,Greece,saline_aquifer,unspecified,1450.0,160.0,400.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+GR_T_20121028174254556,Thessaloniki sandstone,Greece,saline_aquifer,unspecified,2400.0,210.0,400.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+GR_T_20121028174848732,Petropoulaki,Greece,saline_aquifer,unspecified,1100.0,120.0,400.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+GR_T_20121113134115127,Epanomi,Greece,hydrocarbon_unknown,abandoned,2800.0,289.6,289.6,,,review,A,no_pressure_headroom;wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GR_T_20121114120914082,Thessaloniki,Greece,saline_aquifer,unspecified,1800.0,180.0,400.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+HU_T_20120926170002515,Bihar_aq,Hungary,saline_aquifer,unspecified,,260.0,299.0,,,valid,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+HU_T_20120926175528294,Békési_aq,Hungary,saline_aquifer,unspecified,,290.0,333.5,,,valid,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+HU_T_20120926184202139,Nagykunsági_aq,Hungary,saline_aquifer,unspecified,,213.0,244.95,,,valid,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+HU_T_20120926185607969,Zala-délbalatoni_aq,Hungary,saline_aquifer,unspecified,,186.0,213.9,,,valid,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+HU_T_20120926192449658,Somogy-Drávavölgyi,Hungary,saline_aquifer,unspecified,,201.0,231.15,,,valid,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+IE_T_20130228103358057,NCSB A Sand,Ireland,saline_aquifer,unspecified,758.0,78.0,94.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+LT_T_20121204112903375,Syderiai,Lithuania,saline_aquifer,unspecified,1548.0,15.3,15.3,1.0,1.0,review,A,aquifer_max_below_hydrostatic;aquifer_pressure_below_0p2_hydrostatic;current_pressure_parent_difference_over_50pct;max_pressure_parent_difference_over_50pct;no_pressure_headroom,saline_aquifer,False
+LT_T_20121204115343000,Vaskai,Lithuania,saline_aquifer,unspecified,920.0,90.0,90.0,5.0,5.0,review,A,aquifer_max_below_hydrostatic;no_pressure_headroom,saline_aquifer,False
+LV_T_20121008163315755,E6,Latvia,saline_aquifer,unspecified,848.0,84.79999999999998,93.0,1.0,1.0,valid,A,,saline_aquifer,True
+LV_T_20121008163411268,E7,Latvia,saline_aquifer,unspecified,1361.8,136.1,147.0,1.0,1.0,valid,A,,saline_aquifer,True
+LV_T_20121008163438833,Dobele,Latvia,saline_aquifer,unspecified,1058.0,105.8,130.0,13.0,13.0,valid,A,,saline_aquifer,True
+LV_T_20121008163523928,South Kandava,Latvia,saline_aquifer,unspecified,932.5,98.3,113.0,4.0,4.0,valid,A,,saline_aquifer,True
+LV_T_20121008163937883,Aizpute,Latvia,saline_aquifer,unspecified,1096.0,109.6,126.0,3.0,3.0,valid,A,,saline_aquifer,True
+LV_T_20121008164016713,Blidene,Latvia,saline_aquifer,unspecified,1150.0,105.0,120.8,1.0,1.0,valid,A,,saline_aquifer,True
+LV_T_20121008164041599,Degole,Latvia,saline_aquifer,unspecified,1070.0,11.65,15.71,1.0,1.0,review,A,aquifer_max_below_hydrostatic;aquifer_pressure_below_0p2_hydrostatic;current_pressure_parent_difference_over_50pct;max_pressure_parent_difference_over_50pct,saline_aquifer,False
+LV_T_20121008164108931,Edole,Latvia,saline_aquifer,unspecified,960.0,94.5,108.7,3.0,3.0,valid,A,,saline_aquifer,True
+LV_T_20121008164132261,Kalvene,Latvia,saline_aquifer,unspecified,1125.0,106.3,122.2,2.0,2.0,valid,A,,saline_aquifer,True
+LV_T_20121008164155934,Liepaja,Latvia,saline_aquifer,unspecified,1072.0,107.2,123.3,3.0,3.0,valid,A,,saline_aquifer,True
+LV_T_20121008164229838,Luku-Duku,Latvia,saline_aquifer,unspecified,1025.0,93.7,107.8,2.0,2.0,valid,A,,saline_aquifer,True
+LV_T_20121008164310475,North Kuldiga,Latvia,saline_aquifer,unspecified,1025.0,103.4,118.9,4.0,4.0,valid,A,,saline_aquifer,True
+LV_T_20121008164333660,North Ligatne,Latvia,saline_aquifer,unspecified,650.0,54.5,62.7,,,review,A,aquifer_max_below_hydrostatic;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+LV_T_20121008164405139,North Blidene,Latvia,saline_aquifer,unspecified,1025.0,110.0,150.0,2.0,2.0,valid,A,,saline_aquifer,True
+LV_T_20121008164448141,Snepele,Latvia,saline_aquifer,unspecified,1020.0,102.0,152.0,1.0,1.0,valid,A,,saline_aquifer,True
+LV_T_20121008164509606,Usma,Latvia,saline_aquifer,unspecified,1000.0,97.5,112.0,1.0,1.0,valid,A,,saline_aquifer,True
+LV_T_20121008164527910,Vergale,Latvia,saline_aquifer,unspecified,1025.0,98.1,112.8,2.0,2.0,valid,A,,saline_aquifer,True
+LV_T_20121008164548964,Viesatu,Latvia,saline_aquifer,unspecified,1050.0,102.0,117.3,1.0,1.0,valid,A,,saline_aquifer,True
+MK_T_20121001102301868,Priabonian sandstone Ergelija 1,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,638.0,80.0,140.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001103940428,Priabonian sandstone Ergelija 2,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,857.0,80.0,140.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001104554424,Priabonian sandstone Ergelija 3,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,1082.0,80.0,140.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001115843942,Priabonian sandstone Ergelija 4,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,1150.0,80.0,140.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001120548213,Priabonian sandstone Ergelija 5,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,1290.0,80.0,140.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001121333934,Priabonian sandstone Ergelija 6,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,1355.0,80.0,140.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001122016411,Priabonian sandstone Ergelija 7,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,1465.0,80.0,140.0,2.0,2.0,review,A,aquifer_max_below_hydrostatic,saline_aquifer,False
+MK_T_20121001131121867,Priabonian sandstone Sveti Nikole 1,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,722.0,95.0,120.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001131742127,Priabonian sandstone Sveti Nikole 2,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,801.0,95.0,120.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001132252598,Priabonian sandstone Sveti Nikole 3,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,865.0,95.0,120.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001132805333,Priabonian sandstone Sveti Nikole 4,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,874.0,95.0,120.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001133228402,Priabonian sandstone Sveti Nikole 5,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,898.0,95.0,120.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001133619551,Priabonian sandstone Sveti Nikole 6,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,1198.0,95.0,120.0,2.0,2.0,valid,A,,saline_aquifer,True
+MK_T_20121001134013873,Priabonian sandstone Sveti Nikole 7,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,1220.0,95.0,120.0,2.0,2.0,review,A,aquifer_max_below_hydrostatic,saline_aquifer,False
+MK_T_20121001140433201,Priabonian sandstone Veles 1,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,560.0,95.0,120.0,1.0,1.0,valid,A,,saline_aquifer,True
+MK_T_20121001140900097,Priabonian sandstone Veles 2,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,829.0,95.0,120.0,1.0,1.0,valid,A,,saline_aquifer,True
+MK_T_20121001141240123, Priabonian sandstone Veles 3,"Macedonia, The Former Yugoslav Republic Of",saline_aquifer,unspecified,971.0,95.0,120.0,1.0,1.0,valid,A,,saline_aquifer,True
+NL_T_2012092613000001,Tubbergen 2 en Tubbergen 1,Netherlands,hydrocarbon_unknown,suspended,2150.0,,,8.0,10.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000006,(Rossum-Weerselo 2 en) Rossum-Weerselo 1,Netherlands,hydrocarbon_unknown,suspended,1750.0,72.0,199.0,8.0,2.0,valid,A,,hydrocarbon_candidate,True
+NL_T_2012092613000013,K11-FB,Netherlands,hydrocarbon_unknown,suspended,3400.0,,,1.0,7.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000023,K05-G,Netherlands,hydrocarbon_unknown,suspended,3668.9165,,,1.0,0.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000039,Metslawier,Netherlands,hydrocarbon_unknown,suspended,3649.539,95.0,559.0,1.0,1.0,valid,A,,hydrocarbon_candidate,True
+NL_T_2012092613000043,Ameland Noord,Netherlands,hydrocarbon_unknown,suspended,3322.6126666666664,,,2.0,2.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000058,K12-A,Netherlands,hydrocarbon_unknown,suspended,3536.6318333333343,,,4.0,5.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000062,L10-K,Netherlands,hydrocarbon_unknown,suspended,3746.846000000001,,,4.0,1.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000063,L11B-A,Netherlands,hydrocarbon_unknown,suspended,3515.598,,,5.0,2.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000075,Marum,Netherlands,hydrocarbon_unknown,suspended,2448.3136666666664,143.0,281.0,3.0,1.0,valid,A,,hydrocarbon_candidate,True
+NL_T_2012092613000079,Roden,Netherlands,hydrocarbon_unknown,suspended,2946.477,89.0,343.0,3.0,3.0,valid,A,,hydrocarbon_candidate,True
+NL_T_2012092613000081,Akkrum 3,Netherlands,hydrocarbon_unknown,suspended,2312.939,,,1.0,1.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000082,Bergen Rotliegend,Netherlands,hydrocarbon_unknown,suspended,2050.4435000000003,15.0,218.0,4.0,1.0,valid,A,,hydrocarbon_candidate,True
+NL_T_2012092613000092,K10-B,Netherlands,hydrocarbon_unknown,suspended,2792.2278,,,11.0,1.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000093,K11-FA,Netherlands,hydrocarbon_unknown,suspended,3176.0445,,,0.0,5.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000101,Rossum-Weerselo 2 en (Rossum-Weerselo 1),Netherlands,hydrocarbon_unknown,suspended,1299.6534285714283,8.0,150.0,8.0,2.0,valid,A,,hydrocarbon_candidate,True
+NL_T_2012092613000102,Tubbergen 2 en Tubbergen 1,Netherlands,hydrocarbon_unknown,suspended,1535.8980000000004,,,8.0,10.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000115,Rossum-Weerselo 2 en (Rossum-Weerselo 1),Netherlands,hydrocarbon_unknown,suspended,1379.4617142857144,,,8.0,2.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000117,Tubbergen 2 en Tubbergen 1,Netherlands,hydrocarbon_unknown,suspended,1717.6565000000005,,,8.0,10.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000118,Tubbergen-Mander,Netherlands,hydrocarbon_unknown,suspended,1722.0680000000002,,,6.0,2.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000127,Roswinkel,Netherlands,hydrocarbon_unknown,suspended,2112.8188750000004,57.0,332.0,8.0,5.0,valid,A,,hydrocarbon_candidate,True
+NL_T_2012092613000132,L02-FA,Netherlands,hydrocarbon_unknown,suspended,3877.577,,,3.0,3.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000134,P12-C Bunter,Netherlands,hydrocarbon_unknown,abandoned,2859.304,,,1.0,3.0,missing,C,,hydrocarbon_candidate,False
+NL_T_2012092613000144,Harlingen Upper Cretaceous (Chalk),Netherlands,hydrocarbon_unknown,suspended,1046.3947500000002,40.0,162.0,8.0,6.0,valid,A,,hydrocarbon_candidate,True
+NL_T_20121203203827978,Q1-lower cretaceous,Netherlands,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+NL_T_20121203204606571,"P, Q - Lower cretaceous",Netherlands,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+NL_T_20121203205413970,"F15, F18 Triassic",Netherlands,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+NL_T_20121203210356117,"L10, L13 upper rotliegend",Netherlands,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+NL_T_20121210131725613,Step Graben Triassic,Netherlands,saline_aquifer,unspecified,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+NL_T_20130114103410632,Q08-A,Netherlands,hydrocarbon_unknown,abandoned,,,,5.0,5.0,missing,C,,hydrocarbon_candidate,False
+NO_T_20121107103406814,Bryne/Sandnes1,Norway,saline_aquifer,unspecified,1700.0,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+NO_T_20121107103707209,Bryne/Sandnes2,Norway,saline_aquifer,unspecified,1700.0,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+NO_T_20121107103940077,Johansen,Norway,saline_aquifer,unspecified,2900.0,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120821134033114,Bodzanow_Cr1,Poland,saline_aquifer,unspecified,1209.4,111.9,120.9,,,review,A,aquifer_max_below_hydrostatic;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120822114234229,Chelmza_Cr1,Poland,saline_aquifer,unspecified,932.18,89.0,93.2,,,review,A,aquifer_max_below_hydrostatic;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120822140026269,Dzierzanowo_Cr1,Poland,saline_aquifer,unspecified,1094.8,110.0,110.6,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120822145014218,Kamionki_Cr1,Poland,saline_aquifer,unspecified,1377.2,134.3,140.5,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120822150215577,Lipno_Cr1,Poland,saline_aquifer,unspecified,1313.3,131.3,134.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120822152604552,Sierpc_Cr1,Poland,saline_aquifer,unspecified,1143.3,112.0,114.3,,,review,A,aquifer_max_below_hydrostatic;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120823085717965,Sochaczew_Cr1,Poland,saline_aquifer,unspecified,1341.3,127.4,134.1,,,review,A,aquifer_max_below_hydrostatic;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120823094534059,Wyszogrod_Cr1,Poland,saline_aquifer,unspecified,1279.5,121.6,127.95,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120823130954003,Zyrow_Cr1,Poland,saline_aquifer,unspecified,1225.8,115.2,116.5,,,review,A,aquifer_max_below_hydrostatic;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120823134814545,Strzelno_Cr1,Poland,saline_aquifer,unspecified,1176.9,135.3,155.4,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120823140218441,Ponetow_Cr1,Poland,saline_aquifer,unspecified,1923.0,146.2,205.8,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120823141031573,Trzesniew_Cr1,Poland,saline_aquifer,unspecified,2061.8,206.2,208.2,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120823142059399,Turek_Cr1,Poland,saline_aquifer,unspecified,1282.8,130.8,157.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120823143922459,Tuszyn_Cr1,Poland,saline_aquifer,unspecified,895.95,86.5,87.79999999999998,,,review,A,aquifer_max_below_hydrostatic;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120827112227879,Bodzanow_J1bor,Poland,saline_aquifer,unspecified,2438.3,243.8,251.1,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120827112914531,Chelmza_J1bor,Poland,saline_aquifer,unspecified,2024.6,202.5,212.6,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120827134830945,Dzierzanowo_J1bor,Poland,saline_aquifer,unspecified,2210.0,221.0,223.2,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120827135103929,Kamionki_J1bor,Poland,saline_aquifer,unspecified,2802.1,288.6,288.6,,,review,A,no_pressure_headroom;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120926172102141,Lipno_J1bor,Poland,saline_aquifer,unspecified,2463.5,251.3,258.7,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926172502709,Sierpc_J1bor,Poland,saline_aquifer,unspecified,2068.0,206.8,210.9,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926172753466,Sochaczew_J1bor,Poland,saline_aquifer,unspecified,2536.5,241.0,253.7,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926173611231,Lutomiersk_J1bor,Poland,saline_aquifer,unspecified,2040.3,198.9,208.1,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926173942595,Brzesc_Kujawski_J1bor,Poland,saline_aquifer,unspecified,1251.2,109.5,125.1,,,review,A,aquifer_max_below_hydrostatic;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120926174530553,Jezow_J1bor,Poland,saline_aquifer,unspecified,1163.3,109.3,125.6,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926174850889,Zaosie_J1bor,Poland,saline_aquifer,unspecified,635.6,61.3,63.6,,,review,A,current_pressure_parent_difference_over_50pct;depth_parent_difference_over_50pct;max_pressure_parent_difference_over_50pct;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926175340456,Tuszyn_J1kom,Poland,saline_aquifer,unspecified,2446.0,244.6,251.9,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926175701738,Choszczno_J1kom,Poland,saline_aquifer,unspecified,1275.8,124.4,140.3,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926180033633,Suliszewo_J1kom,Poland,saline_aquifer,unspecified,1339.5,127.3,133.95,,,review,A,aquifer_max_below_hydrostatic;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120926180323486,Brzesc Kujawski_J1kom,Poland,saline_aquifer,unspecified,1585.0,138.7,158.5,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926180632730,Jezow_J1kom,Poland,saline_aquifer,unspecified,1491.0,140.2,161.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926180944142,Zaosie_J1kom,Poland,saline_aquifer,unspecified,843.4,81.4,84.29999999999998,,,review,A,aquifer_max_below_hydrostatic;current_pressure_parent_difference_over_50pct;depth_parent_difference_over_50pct;max_pressure_parent_difference_over_50pct;wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,False
+PL_T_20120926181300780,Jezow_T1,Poland,saline_aquifer,unspecified,3749.8,352.5,405.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+PL_T_20120926181353269,Zaosie_T1,Poland,saline_aquifer,unspecified,3228.9,311.6,322.9,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,saline_aquifer,True
+RO_T_20121018151553972,Stramba-Rogojelu,Romania,hydrocarbon_unknown,suspended,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+RO_T_20121019121104885,Ghercesti,Romania,hydrocarbon_unknown,depleted,100.0,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+RO_T_20121019122359871,Tepu,Romania,hydrocarbon_unknown,depleted,1881.0,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+RO_T_20121019123912004,Ghergheasa,Romania,hydrocarbon_unknown,depleted,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+RO_T_20121019134827630,Tintea-Baicoi-Floresti-Calinesti,Romania,hydrocarbon_unknown,depleted,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+RO_T_20121022132659232,Malu Mare,Romania,hydrocarbon_unknown,depleted,100.0,0.5,,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+SK_T_20121024162109828,Dubrava,Slovakia,hydrocarbon_unknown,depleted,1000.0,100.0,120.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,True
+GB_T_20120926115432395,Camelot North gas field,United Kingdom,hydrocarbon_unknown,depleted,1913.11,,193.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926121001289,Camelot Central South gas field,United Kingdom,hydrocarbon_unknown,depleted,1859.6,,193.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926121706553,Camelot North East gas field,United Kingdom,hydrocarbon_unknown,depleted,1953.63,,193.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926122157324,Cleeton gas field,United Kingdom,hydrocarbon_unknown,depleted,2807.99,,286.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926151130464,Beaufort gas field,United Kingdom,hydrocarbon_unknown,depleted,2640.93,,276.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152337519,Big Dotty gas field,United Kingdom,hydrocarbon_unknown,suspended,1777.38,,182.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152345874,Little Dotty gas field,United Kingdom,hydrocarbon_unknown,suspended,1782.82,,189.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152354275,Della gas field,United Kingdom,hydrocarbon_unknown,suspended,1848.88,,193.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152401276,Dawn gas field,United Kingdom,hydrocarbon_unknown,depleted,1754.11,,162.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152407857,Delilah gas field,United Kingdom,hydrocarbon_unknown,suspended,1928.32,,196.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152637489,Baird gas field,United Kingdom,hydrocarbon_unknown,suspended,2677.6,,267.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152820399,Sinope gas field,United Kingdom,hydrocarbon_unknown,suspended,2570.82,,267.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152840185,Tristan gas field,United Kingdom,hydrocarbon_unknown,depleted,2424.88,,267.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152853911,Vixen gas field,United Kingdom,hydrocarbon_unknown,suspended,2820.69,,267.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152903695,Welland NW gas field,United Kingdom,hydrocarbon_unknown,depleted,2354.66,,267.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152910051,Welland S gas field,United Kingdom,hydrocarbon_unknown,depleted,2333.55,,267.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926152949405,Barque South gas field,United Kingdom,hydrocarbon_unknown,suspended,2656.81,,264.0,,,missing,B,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926153056830,Vampire gas field,United Kingdom,hydrocarbon_unknown,suspended,2599.07,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20120926153201070,Brigantine A gas field,United Kingdom,hydrocarbon_unknown,abandoned,2324.97,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20130318105351018,Esmond gas field,United Kingdom,hydrocarbon_unknown,depleted,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20130318105501521,Gordon gas field,United Kingdom,hydrocarbon_unknown,depleted,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20130318105622334,Forbes gas field,United Kingdom,hydrocarbon_unknown,depleted,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20130318110035410,Orwell gas field,United Kingdom,hydrocarbon_unknown,depleted,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False
+GB_T_20130321093638223,Frigg gas field,United Kingdom,hydrocarbon_unknown,abandoned,1870.0,188.0,238.0,,,valid,A,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,True
+GB_T_20130321140757197,Goldeneye gas/condensate field,United Kingdom,hydrocarbon_unknown,depleted,,,,,,missing,C,wells_abandoned_unreported;wells_penetrating_unreported,hydrocarbon_candidate,False

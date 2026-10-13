@@ -14,8 +14,8 @@ class HyStoriesCostAssumptions:
     target_year: int = 2025
 
     # Material cost factors
-    material_cost_factor_injection: float = 1.0
-    material_cost_factor_withdrawal: float = 1.0
+    material_cost_factor_injection: float = 1.5
+    material_cost_factor_withdrawal: float = 1.5
 
     # Energy and commodity prices
     #
@@ -23,8 +23,8 @@ class HyStoriesCostAssumptions:
     # commissioning energy and for reduced-form operational OPEX correlations.
     # Operational compression electricity can instead be left out of UHS OPEX
     # and represented explicitly in a downstream CEM.
-    cost_of_electricity_eur_per_mwh: float = 60.0
-    hydrogen_cost_eur_per_kg: float = 4.12
+    cost_of_electricity_eur_per_mwh: float = 80.0
+    hydrogen_cost_eur_per_kg: float = 6.71
 
     # OPEX
     surface_fixed_component_of_fixed_opex: float = 2100.0
