@@ -204,6 +204,61 @@ def fit_one(cls, samples, maxiter, nstarts):
     return summary,d.sort_values('joint_log_distance')
 
 
+
+# Empirical parameter quantiles are descriptive screening bounds, not
+# jointly observed reservoir configurations. Each geographical group receives
+# equal total weight, split among its constituent site rows.
+PARAMETERS = {
+    'DGF': (
+        ('depth_m_representative', 'depth_m', 'm'),
+        ('model_abandonment_pressure_bar', 'abandonment_pressure_bar', 'bar'),
+        ('min_storage_pressure_bar', 'minimum_pressure_bar', 'bar'),
+        ('max_storage_pressure_bar', 'maximum_pressure_bar', 'bar'),
+    ),
+    'SA': (
+        ('depth_m_representative', 'depth_m', 'm'),
+        ('min_storage_pressure_bar', 'minimum_pressure_bar', 'bar'),
+        ('max_storage_pressure_bar', 'maximum_pressure_bar', 'bar'),
+    ),
+}
+QUANTILES = (10, 25, 50, 75, 90)
+
+
+def parameter_quantile_rows(cls, ranked, summary):
+    """Geography-weighted empirical marginal quantiles, with OAT feasibility flags.
+
+    Pressure feasibility is tested by replacing ONLY the selected field in the
+    calibrated reference. No quantile is clipped or silently adjusted.
+    Depth is not checked against independent hydraulic/geological constraints.
+    """
+    weights = ranked['geographic_group_weight'].to_numpy(dtype=float)
+    pab = float(summary['abandonment_pressure_bar']) if cls == 'DGF' else None
+    pmin = float(summary['minimum_pressure_bar'])
+    pmax = float(summary['maximum_pressure_bar'])
+    rows = []
+    for source_col, output_col, unit in PARAMETERS[cls]:
+        q = {f'q{k:02d}': weighted_quantile(ranked[source_col], weights, k / 100)
+             for k in QUANTILES}
+        ref = float(summary[output_col])
+        result = dict(storage_class=cls, parameter=source_col, unit=unit,
+                      n_rows=len(ranked),
+                      n_geographic_groups=ranked.geographic_group.nunique(),
+                      reference_value=ref, **q)
+        for k in QUANTILES:
+            val = q[f'q{k:02d}']
+            a, b, c = pab, pmin, pmax
+            if output_col == 'abandonment_pressure_bar':
+                a = val
+            elif output_col == 'minimum_pressure_bar':
+                b = val
+            elif output_col == 'maximum_pressure_bar':
+                c = val
+            feasible = (0 < b < c and (a is None or 0 < a < b))
+            result[f'q{k:02d}_oat_pressure_feasible'] = bool(feasible)
+        rows.append(result)
+    return rows
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--samples',type=Path,default=Path('outputs/cost_sensitivity/reservoir_sample_results.csv'))
@@ -217,10 +272,12 @@ def main():
     data=attach_groups(data,args.groups)
     args.output_dir.mkdir(parents=True,exist_ok=True)
     summaries=[]
+    parameter_rows=[]
     for cls in ('DGF','SA'):
         print(f'Calibrating {cls}...')
         summary, ranked=fit_one(cls,data,args.maxiter,args.starts)
         summaries.append(summary)
+        parameter_rows.extend(parameter_quantile_rows(cls, ranked, summary))
         ranked.to_csv(args.output_dir/f'{cls.lower()}_ranked_sites.csv',index=False)
         print(f"  {summary['n_rows']} complete rows, {summary['n_geographic_groups']} groups")
         print(f"  Nearest observed site: {summary['reference_site']}")
@@ -233,6 +290,18 @@ def main():
                   f"fitted={summary['calibrated_'+cost]:.4f} "
                   f"({summary['error_pct_'+cost]:+.1f}%)")
     pd.DataFrame(summaries).to_csv(args.output_dir/'calibrated_reference_configs.csv',index=False)
+    parameter_table = pd.DataFrame(parameter_rows)
+    parameter_table.to_csv(args.output_dir/'reservoir_parameter_quantiles.csv', index=False)
+    print('\nGeography-weighted parameter quantiles (pressure feasibility at fixed fitted reference):')
+    for _, row in parameter_table.iterrows():
+        print(f"  {row['storage_class']} {row['parameter']}: "
+              f"Q10={row['q10']:.2f}, Q25={row['q25']:.2f}, "
+              f"Q50={row['q50']:.2f}, Q75={row['q75']:.2f}, Q90={row['q90']:.2f} "
+              f"(reference={row['reference_value']:.2f} {row['unit']})")
+        for qlabel in ('q10', 'q25', 'q75', 'q90'):
+            if not row[f'{qlabel}_oat_pressure_feasible']:
+                print(f"    WARNING: {qlabel.upper()} invalid as an independent pressure OAT "
+                      f"against the fitted reference ({row[qlabel]:.2f} {row['unit']})")
     data[['storage_class','site','country','geographic_group']].to_csv(
         args.output_dir/'reviewed_group_memberships.csv',index=False)
     print('Saved:', args.output_dir)

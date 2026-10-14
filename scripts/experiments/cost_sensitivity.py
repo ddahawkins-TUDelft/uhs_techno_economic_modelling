@@ -8,9 +8,9 @@ and varies exogenous engineering/economic *factors* around the reference design.
 
 A factor may comprise one model parameter or a physically correlated bundle of
 parameters. The ordinary screening registry is restricted to factors for which a
-low/default/high interpretation is meaningful. Reservoir depth, minimum pressure,
-maximum pressure and (for depleted fields) abandonment pressure are retained as
-separate OAT screens so their individual model effects remain visible.
+low/default/high interpretation is meaningful. Reservoir depth and three coupled pressure-coordinate screens are retained:
+absolute pressure level, operating pressure-ratio headroom, and (DGF only)
+abandonment fraction. Every pressure screen preserves pressure ordering.
 
 Documented reservoir configurations are evaluated separately from the OAT screen.
 They are loaded from ``RESERVOIR_SAMPLES_CSV`` and applied as coupled site cases
@@ -164,7 +164,7 @@ RUN_SENSITIVITIES: tuple[str, ...] | None = None
 # Broad screening should normally continue if one deliberately extreme case
 # turns out to be infeasible. Failed cases are written to the CSV with the
 # exception message and omitted from the figure.
-FAIL_FAST = False
+FAIL_FAST = True
 
 # Figure layout / behaviour.
 SORT_WITHIN_CATEGORY_BY_MAX_IMPACT = True
@@ -409,6 +409,19 @@ CATEGORY_ORDER = (
 # and sensitivity case, but are not plotted as uncertain factors because no
 # low/high range is currently being claimed for them.
 REFERENCE_ONLY_OVERRIDES: tuple[ReferenceOnlyOverride, ...] = (
+    # Absolute reference pressure coordinates (Pa). The factors below modify
+    # these coherently rather than claiming independent low/high pressures.
+    ReferenceOnlyOverride("design_general", "minimum_operating_pressure_pa",
+                          {"salt_cavern": 72.0, "depleted_gas_field": 77.83,
+                           "aquifer": 118.59, "lined_rock_cavern": 55.0},
+                          ALL_TECHS, "bar", input_scale=1e5),
+    ReferenceOnlyOverride("design_general", "maximum_operating_pressure_pa",
+                          {"salt_cavern": 180.0, "depleted_gas_field": 151.62,
+                           "aquifer": 143.67, "lined_rock_cavern": 200.0},
+                          ALL_TECHS, "bar", input_scale=1e5),
+    ReferenceOnlyOverride("design_general", "abandonment_pressure_pa", 46.04,
+                          ("depleted_gas_field",), "bar", input_scale=1e5),
+
     ReferenceOnlyOverride(
         override_scope="design_general",
         parameter="recovery_factor",
@@ -482,107 +495,55 @@ SENSITIVITY_SPECS: tuple[SensitivitySpec, ...] = (
             "are evaluated separately by the reservoir-sample sweep."
         ),
     ),
+    # Pressure screens are derived in build_case_configuration, not independent
+    # absolute pressure overrides. The factor is recorded as a non-design
+    # coordinate in the case definition and specification output via a marker
+    # override (see apply_pressure_coordinates).
     SensitivitySpec(
-        key="minimum_operating_pressure",
-        label="Minimum operating pressure",
-        category="Geological / storage design",
-        technologies=("salt_cavern", "depleted_gas_field", "aquifer"),
-        overrides=(
-            SensitivityOverride(
-                override_scope="design_general",
-                parameter="minimum_operating_pressure_pa",
-                low={
-                    "salt_cavern": 46.0,
-                    "depleted_gas_field": 36.0,
-                    "aquifer": 36.0,
-                },
-                default={
-                    "salt_cavern": 72.0,
-                    "depleted_gas_field": 77.83,
-                    "aquifer": 118.59,
-                },
-                high={
-                    "salt_cavern": 102.0,
-                    "depleted_gas_field": 185.0,
-                    "aquifer": 185.0,
-                },
-                unit="bar",
-                input_scale=1e5,
-            ),
-        ),
-        range_basis="literature + screening",
-        source="HyStories porous-media/salt pressure envelopes; Roden high-pressure case",
-        note=(
-            "OAT diagnostic only. Minimum operating pressure is changed independently "
-            "of depth and maximum pressure to expose its model effect. DGF abandonment "
-            "pressure stays at the reference value in this OAT screen; documented "
-            "coupled pressure histories are handled by the reservoir-sample sweep."
-        ),
-    ),
-    SensitivitySpec(
-        key="maximum_operating_pressure",
-        label="Maximum operating pressure",
+        key="reservoir_pressure_level",
+        label="Reservoir pressure level (coupled)",
         category="Geological / storage design",
         technologies=ALL_TECHS,
-        overrides=(
-            SensitivityOverride(
-                override_scope="design_general",
-                parameter="maximum_operating_pressure_pa",
-                low={
-                    "salt_cavern": 90.0,
-                    "depleted_gas_field": 93.0,
-                    "aquifer": 93.0,
-                    "lined_rock_cavern": 150.0,
-                },
-                default={
-                    "salt_cavern": 180.0,
-                    "depleted_gas_field": 151.62,
-                    "aquifer": 143.67,
-                    "lined_rock_cavern": 200.0,
-                },
-                high={
-                    "salt_cavern": 270.0,
-                    "depleted_gas_field": 251.0,
-                    "aquifer": 251.0,
-                    "lined_rock_cavern": 250.0,
-                },
-                unit="bar",
-                input_scale=1e5,
-            ),
-        ),
-        range_basis="literature + screening",
-        source="HyStories conceptual pressure ranges; Roden high-pressure case; LRC literature",
-        note=(
-            "OAT diagnostic only. Maximum operating pressure is varied independently "
-            "while depth and minimum pressure remain at their reference values. "
-            "Coupled documented site configurations are evaluated separately."
-        ),
+        overrides=(SensitivityOverride(
+            override_scope="design_general", parameter="minimum_operating_pressure_pa",
+            low=0.5, default=1.0, high=1.5, unit="pressure scale ×",
+        ),),
+        range_basis="symmetric factor screen",
+        source="Study-defined 0.5–1.5 multiplier",
+        note=("Scale all physical pressure coordinates by 0.5, 1.0, 1.5. "
+              "The operating ratio and DGF abandonment fraction are constant; "
+              "the absolute pressure difference changes. For LRC the interface "
+              "pipeline pressure is also scaled to preserve the model's equality "
+              "between minimum cavern and pipeline pressure. Depth is fixed."),
     ),
     SensitivitySpec(
-        key="abandonment_pressure",
-        label="DGF abandonment pressure",
+        key="reservoir_pressure_ratio",
+        label="Operating pressure-ratio headroom",
+        category="Geological / storage design",
+        technologies=ALL_TECHS,
+        overrides=(SensitivityOverride(
+            override_scope="design_general", parameter="maximum_operating_pressure_pa",
+            low=0.5, default=1.0, high=1.5, unit="ratio excess scale ×",
+        ),),
+        range_basis="symmetric factor screen",
+        source="Study-defined 0.5–1.5 multiplier",
+        note=("Scale R-1, where R=Pmax/Pmin, by 0.5, 1.0, 1.5; "
+              "hold Pmin, Pab and depth fixed. This is NOT 0.5 × R: "
+              "scaling R directly can imply Pmax<Pmin for narrow aquifer windows."),
+    ),
+    SensitivitySpec(
+        key="reservoir_abandonment_fraction",
+        label="DGF abandonment-pressure fraction",
         category="Geological / storage design",
         technologies=("depleted_gas_field",),
-        overrides=(
-            SensitivityOverride(
-                override_scope="design_general",
-                parameter="abandonment_pressure_pa",
-                low=30.0,
-                default=46.04,
-                high=106.0,
-                unit="bar",
-                input_scale=1e5,
-            ),
-        ),
-        range_basis="literature",
-        source="De Lier / P18 / Roden depleted-field cases",
-        note=(
-            "OAT diagnostic only. Abandonment pressure represents prior depletion "
-            "history and is varied independently here to expose its cost-model effect. "
-            "No deterministic relationship to minimum storage pressure is claimed; "
-            "the empirical DGF reservoir-sample sweep preserves documented coupled "
-            "abandonment/minimum/maximum pressure combinations instead."
-        ),
+        overrides=(SensitivityOverride(
+            override_scope="design_general", parameter="abandonment_pressure_pa",
+            low=0.5, default=1.0, high=1.5, unit="Pab/Pmin scale ×",
+        ),),
+        range_basis="symmetric factor screen",
+        source="Study-defined 0.5–1.5 multiplier",
+        note=("Scale A=Pab/Pmin by 0.5, 1.0, 1.5 at fixed "
+              "Pmin, operating ratio, and depth; enforce 0<A<1."),
     ),
     SensitivitySpec(
         key="recoverability_factor",
@@ -791,9 +752,9 @@ SENSITIVITY_SPECS: tuple[SensitivitySpec, ...] = (
             SensitivityOverride(
                 override_scope="design_technology",
                 parameter="number_production_well_heads",
-                low=5,
+                low=12,
                 default=24,
-                high=71,
+                high=36,
                 unit="wells",
                 integer=True,
             ),
@@ -802,7 +763,7 @@ SENSITIVITY_SPECS: tuple[SensitivitySpec, ...] = (
                 parameter="number_observation_well_heads",
                 low=1,
                 default=6,
-                high=34,
+                high=12,
                 unit="wells",
                 integer=True,
             ),
@@ -1844,6 +1805,82 @@ def _apply_parameter_value(
     return general, technology_specific, depth_changed, temperature_changed
 
 
+PRESSURE_COORDINATE_SENSITIVITIES = {
+    "reservoir_pressure_level",
+    "reservoir_pressure_ratio",
+    "reservoir_abandonment_fraction",
+}
+
+PRESSURE_COORDINATE_PARAMETERS = {
+    "reservoir_pressure_level": "minimum_operating_pressure_pa",
+    "reservoir_pressure_ratio": "maximum_operating_pressure_pa",
+    "reservoir_abandonment_fraction": "abandonment_pressure_pa",
+}
+
+
+def pressure_coordinate_multiplier(sensitivity: SensitivitySpec, level: CaseLevel) -> float:
+    if sensitivity.key not in PRESSURE_COORDINATE_SENSITIVITIES:
+        raise ValueError(f"Not a pressure-coordinate sensitivity: {sensitivity.key}")
+    if len(sensitivity.overrides) != 1:
+        raise ValueError(f"{sensitivity.key} requires exactly one factor marker")
+    return float(getattr(sensitivity.overrides[0], level))
+
+
+def apply_pressure_coordinates(
+    general: Any, technology: TechnologySpec, sensitivity: SensitivitySpec, level: CaseLevel,
+) -> Any:
+    """Change one dimensionless pressure coordinate, preserving the others."""
+    factor = pressure_coordinate_multiplier(sensitivity, level)
+    pmin = float(general.minimum_operating_pressure_pa)
+    pmax = float(general.maximum_operating_pressure_pa)
+    if not (math.isfinite(pmin) and math.isfinite(pmax) and 0 < pmin < pmax):
+        raise ValueError(f"Invalid reference pressure window for {technology.technology}: {pmin}, {pmax}")
+    pab = None
+    if technology.technology == "depleted_gas_field":
+        pab = float(general.abandonment_pressure_pa)
+        if not (math.isfinite(pab) and 0 < pab < pmin):
+            raise ValueError(f"Invalid DGF reference abandonment: {pab}, {pmin}")
+
+    if sensitivity.key == "reservoir_pressure_level":
+        pmin_new, pmax_new = factor * pmin, factor * pmax
+        pab_new = factor * pab if pab is not None else None
+    elif sensitivity.key == "reservoir_pressure_ratio":
+        # Dimensionless excess over unity, not direct multiplication of R.
+        pmin_new = pmin
+        pmax_new = pmin + factor * (pmax - pmin)
+        pab_new = pab
+    elif sensitivity.key == "reservoir_abandonment_fraction":
+        if pab is None:
+            raise ValueError("Abandonment sensitivity applies to DGF only")
+        pmin_new, pmax_new, pab_new = pmin, pmax, factor * pab
+    else:
+        raise ValueError(f"Unknown pressure screen: {sensitivity.key}")
+
+    validate_pressures(technology.technology, pmin_new, pmax_new, pab_new)
+    updates = {
+        "minimum_operating_pressure_pa": pmin_new,
+        "maximum_operating_pressure_pa": pmax_new,
+    }
+    if pab_new is not None:
+        updates["abandonment_pressure_pa"] = pab_new
+    if sensitivity.key == "reservoir_pressure_level" and technology.technology == "lined_rock_cavern":
+        # LRC's Pmin equals pipeline/interface pressure in the supplied model.
+        updates["pipeline_pressure_pa"] = factor * float(general.pipeline_pressure_pa)
+    return replace(general, **updates)
+
+
+def validate_pressures(
+    technology_name: str, pmin: float, pmax: float, pab: float | None,
+) -> None:
+    vals = (pmin, pmax) if pab is None else (pab, pmin, pmax)
+    if not all(math.isfinite(v) for v in vals):
+        raise ValueError(f"{technology_name}: nonfinite pressure values {vals}")
+    if pmin <= 0 or pmax <= pmin:
+        raise ValueError(f"{technology_name}: expected 0 < Pmin < Pmax, got {vals}")
+    if pab is not None and not (0 < pab < pmin):
+        raise ValueError(f"{technology_name}: expected 0 < Pab < Pmin < Pmax, got {vals}")
+
+
 def build_case_configuration(
     technology: TechnologySpec,
     sensitivity: SensitivitySpec | None = None,
@@ -1894,6 +1931,8 @@ def build_case_configuration(
     for spec in SENSITIVITY_SPECS:
         if technology.technology not in spec.technologies:
             continue
+        if spec.key in PRESSURE_COORDINATE_SENSITIVITIES:
+            continue  # Pressure defaults are REFERENCE_ONLY_OVERRIDES.
         for override in spec.overrides:
             if not override_applies(override, technology):
                 continue
@@ -1927,7 +1966,9 @@ def build_case_configuration(
                 f"{technology.technology!r}."
             )
 
-        for override in sensitivity.overrides:
+        if sensitivity.key in PRESSURE_COORDINATE_SENSITIVITIES:
+            general = apply_pressure_coordinates(general, technology, sensitivity, level)
+        for override in (() if sensitivity.key in PRESSURE_COORDINATE_SENSITIVITIES else sensitivity.overrides):
             if not override_applies(override, technology):
                 continue
             apply(
@@ -2034,6 +2075,19 @@ def sensitivity_case_definition(
         value = resolve_override_internal_value(override, technology, level)
         display = internal_to_display(value, override.input_scale)
         parts.append(f"{override.parameter}={display:g} {override.unit}".rstrip())
+    if sensitivity.key in PRESSURE_COORDINATE_SENSITIVITIES:
+        cfg, _, _ = build_case_configuration(
+            technology, sensitivity if level != "default" else None,
+            level if level != "default" else None,
+        )
+        g = cfg.general
+        parts = [f"factor={pressure_coordinate_multiplier(sensitivity, level):g} x",
+                 f"Pmin={g.minimum_operating_pressure_pa / 1e5:.3f} bar",
+                 f"Pmax={g.maximum_operating_pressure_pa / 1e5:.3f} bar"]
+        if technology.technology == "depleted_gas_field":
+            parts.append(f"Pab={g.abandonment_pressure_pa / 1e5:.3f} bar")
+        if technology.technology == "lined_rock_cavern":
+            parts.append(f"pipeline={g.pipeline_pressure_pa / 1e5:.3f} bar")
     return "; ".join(parts)
 
 
@@ -3394,6 +3448,8 @@ def validate_configuration() -> None:
                     technology,
                     "default",
                 )
+                if spec.key in PRESSURE_COORDINATE_SENSITIVITIES:
+                    continue  # Coordinate markers are not physical pressure defaults.
                 key = (
                     technology_name,
                     override.override_scope,
@@ -3456,8 +3512,28 @@ def validate_configuration() -> None:
             defaults_seen[key] = default_value
 
 
+def preflight_pressure_cases() -> None:
+    """Reject invalid pressure-sensitivity configurations before any cost runs."""
+    print("Pressure sensitivity preflight:")
+    for tech in selected_technology_specs():
+        for spec in selected_sensitivity_specs():
+            if spec.key not in PRESSURE_COORDINATE_SENSITIVITIES or tech.technology not in spec.technologies:
+                continue
+            for level in ("low", "high"):
+                cfg, _, _ = build_case_configuration(tech, spec, level)
+                g = cfg.general
+                pab = float(g.abandonment_pressure_pa) if tech.technology == "depleted_gas_field" else None
+                validate_pressures(tech.technology, float(g.minimum_operating_pressure_pa),
+                                   float(g.maximum_operating_pressure_pa), pab)
+                print(f"  {tech.technology}/{spec.key}/{level}: "
+                      f"Pmin={g.minimum_operating_pressure_pa/1e5:.2f} "
+                      f"Pmax={g.maximum_operating_pressure_pa/1e5:.2f}" +
+                      (f" Pab={pab/1e5:.2f}" if pab is not None else ""))
+
+
 def main() -> None:
     validate_configuration()
+    preflight_pressure_cases()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     FIGURE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -3475,11 +3551,13 @@ def main() -> None:
             print(
                 f"  {row['sensitivity']} | {row['technology']}: {row['error']}"
             )
-        if FAIL_FAST:
-            raise RuntimeError("Invalid enabled sensitivity specifications.")
+        raise RuntimeError("Invalid enabled sensitivity specifications.")
 
     rows, baselines = run_experiment()
     write_csv(OUTPUT_RESULTS_CSV, rows)
+    failed = [row for row in rows if row.get("status") != "ok"]
+    if failed:
+        raise RuntimeError(f"Sensitivity sweep has {len(failed)} failed cases; see {OUTPUT_RESULTS_CSV}")
     plot_tcr_sensitivity_ranges(rows)
     print_screening_summary(rows)
 
